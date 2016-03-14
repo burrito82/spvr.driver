@@ -67,7 +67,24 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     endif (ENABLE_CUSTOM_GCC_FLAGS)
 endif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
+set (CUSTOM_HEADERS)
 set (CUSTOM_LIBRARIES)
+
+set(Boost_USE_STATIC_LIBS off)
+set(Boost_USE_MULTITHREADED on)
+set(Boost_USE_STATIC_RUNTIME off)
+find_package(Boost REQUIRED libdate_time)
+if (Boost_FOUND)
+    set(CUSTOM_HEADERS ${CUSTOM_HEADERS} ${Boost_INCLUDE_DIRS})
+    set(CUSTOM_LIBRARIES ${CUSTOM_LIBRARIES} ${Boost_LIBRARIES})
+    message("${Boost_LIBRARYDIR}")
+    message("${Boost_LIBRARIES}")
+endif (Boost_FOUND)
+
+include_directories(${CUSTOM_HEADERS})
+
+# ControlInterface
+add_definitions(-DSVR_SHM_DRIVER)
 
 # Including the source files of all source subfolders recursively
 
@@ -77,4 +94,15 @@ add_library(driver_smartvr SHARED ${ProjectSources})
 target_link_libraries(driver_smartvr
     ${CUSTOM_LIBRARIES}
 )
+
+option(COPY_AFTER_BUILD "Copy the dll to a target location, e.g., SteamVR/drivers/..." off)
+if (COPY_AFTER_BUILD)
+    set(COPY_AFTER_BUILD_TARGET
+        E:/SteamLibrary/steamapps/common/SteamVR/drivers/smartvr/bin/win32/driver_smartvr.dll
+        CACHE PATH "target location, e.g., (SteamVR/drivers/...)/driver_smartvr.dll")
+    set(COPY_AFTER_BUILD_BUILD_TYPE "Debug" CACHE PATH "build type, e.g., Debug, Release")
+    add_custom_command(TARGET driver_smartvr POST_BUILD COMMAND ${CMAKE_COMMAND} -E
+        copy ${CMAKE_CURRENT_BINARY_DIR}/${COPY_AFTER_BUILD_BUILD_TYPE}/driver_smartvr.dll
+        ${COPY_AFTER_BUILD_TARGET})
+endif (COPY_AFTER_BUILD)
 

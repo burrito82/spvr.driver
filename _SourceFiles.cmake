@@ -5,8 +5,16 @@ set(RelativeSourceGroup "src")
 set(SubDirs)
 
 set(DirFiles
+    ClientProvider.cpp
+    ClientProvider.h
+    ControlInterface.cpp
+    ControlInterface.h
+    ServerProvider.cpp
+    ServerProvider.h
     smartvr.cpp
     smartvr.h
+    SVRLibConfig.h
+
     openvr_driver.h
 
     _SourceFiles.cmake
