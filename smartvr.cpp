@@ -15,7 +15,7 @@
 namespace smartvr
 {
 
-std::ofstream debug{"debug.log"};
+
 
 } // namespace smartvr
 

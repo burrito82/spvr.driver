@@ -7,10 +7,14 @@ set(SubDirs)
 set(DirFiles
     ClientProvider.cpp
     ClientProvider.h
+    Context.cpp
+    Context.h
     ControlInterface.cpp
     ControlInterface.h
     HmdDriver.cpp
     HmdDriver.h
+    Logger.cpp
+    Logger.h
     ServerProvider.cpp
     ServerProvider.h
     smartvr.cpp

@@ -15,6 +15,8 @@ namespace smartvr
 class ControlInterface final
 {
 public:
+    static std::unique_ptr<ControlInterface> S_pInstance;
+
     ControlInterface();
     ~ControlInterface();
 

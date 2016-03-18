@@ -60,7 +60,7 @@ public:
 
     std::string const GetLine(std::size_t iLine) const
     {
-        return std::string{m_aLogLines[iLine * S_iLineLength]};
+        return std::string{static_cast<char const *>(&m_aLogLines[iLine * S_iLineLength])};
     }
 
     std::string const GetNext()

@@ -4,6 +4,10 @@
  */
 #include "ClientProvider.h"
 
+#include "Context.h"
+#include "ControlInterface.h"
+#include "Logger.h"
+
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -43,17 +47,20 @@ static const char *const DisplayFrequency_Float = "displayFrequency";
 */
 vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir)
 {
+    auto &rContext = Context::GetInstance();
+    rContext.GetLogger().AddDriverLog(pDriverLog);
     /*debug << "SmartClient::Init(...)\n"
         << "pchUserDriverConfigDir: " << pchUserDriverConfigDir << "\n"
         << "pchDriverInstallDir: " << pchDriverInstallDir << std::endl;*/
-    pDriverLog->Log("Hello World!");
+    rContext.GetLogger().Log("Hello World!");
     return vr::EVRInitError::VRInitError_None;
 }
 
 /** cleans up the driver right before it is unloaded */
 void SmartClient::Cleanup()
 {
-    //debug << "SmartClient::Cleanup()" << std::endl;
+    Context::GetInstance().GetLogger().Log("SmartClient::Cleanup()");
+    Context::Destroy();
 }
 
 /** Called when the client needs to inform an application if an HMD is attached that uses
