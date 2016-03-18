@@ -43,9 +43,9 @@ static const char *const DisplayFrequency_Float = "displayFrequency";
 */
 vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir)
 {
-    debug << "SmartClient::Init(...)\n"
+    /*debug << "SmartClient::Init(...)\n"
         << "pchUserDriverConfigDir: " << pchUserDriverConfigDir << "\n"
-        << "pchDriverInstallDir: " << pchDriverInstallDir << std::endl;
+        << "pchDriverInstallDir: " << pchDriverInstallDir << std::endl;*/
     pDriverLog->Log("Hello World!");
     return vr::EVRInitError::VRInitError_None;
 }
@@ -53,7 +53,7 @@ vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriver
 /** cleans up the driver right before it is unloaded */
 void SmartClient::Cleanup()
 {
-    debug << "SmartClient::Cleanup()" << std::endl;
+    //debug << "SmartClient::Cleanup()" << std::endl;
 }
 
 /** Called when the client needs to inform an application if an HMD is attached that uses
@@ -67,14 +67,14 @@ bool SmartClient::BIsHmdPresent(const char *pchUserConfigDir)
     {
         pchUserConfigDir = "nullptr";
     }
-    debug << "SmartClient::BIsHmdPresent(\"" << pchUserConfigDir << "\")" << std::endl;
+    //debug << "SmartClient::BIsHmdPresent(\"" << pchUserConfigDir << "\")" << std::endl;
     return true;
 }
 
 /** called when the client inits an HMD to let the client driver know which one is in use */
 vr::EVRInitError SmartClient::SetDisplayId(const char *pchDisplayId)
 {
-    debug << "SmartClient::SetDisplayId(\"" << pchDisplayId << "\")" << std::endl;
+    //debug << "SmartClient::SetDisplayId(\"" << pchDisplayId << "\")" << std::endl;
     return vr::EVRInitError::VRInitError_None;
 }
 
@@ -86,7 +86,7 @@ vr::EVRInitError SmartClient::SetDisplayId(const char *pchDisplayId)
 */
 vr::HiddenAreaMesh_t SmartClient::GetHiddenAreaMesh(vr::EVREye eEye)
 {
-    debug << "SmartClient::GetHiddenAreaMesh(" << eEye << ")" << std::endl;
+    //debug << "SmartClient::GetHiddenAreaMesh(" << eEye << ")" << std::endl;
     return vr::HiddenAreaMesh_t{nullptr, 0};
 }
 
@@ -94,8 +94,8 @@ vr::HiddenAreaMesh_t SmartClient::GetHiddenAreaMesh(vr::EVREye eEye)
 * Returns the size in bytes of the buffer required to hold the specified resource. */
 uint32_t SmartClient::GetMCImage(uint32_t *pImgWidth, uint32_t *pImgHeight, uint32_t *pChannels, void *pDataBuffer, uint32_t unBufferLen)
 {
-    debug << "SmartClient::GetMCImage(...)" << std::endl;
-    return *pImgWidth * *pImgHeight * *pChannels;
+    //debug << "SmartClient::GetMCImage(...)" << std::endl;
+    return 0;
 }
 
 } // namespace smartvr

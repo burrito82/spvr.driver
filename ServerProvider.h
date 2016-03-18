@@ -7,12 +7,19 @@
 
 #include "openvr_driver.h"
 
+#include <memory>
+
 namespace smartvr
 {
+
+class HmdDriver;
 
 class SmartServer final : public vr::IServerTrackedDeviceProvider
 {
 public:
+    SmartServer();
+    ~SmartServer();
+
     /** initializes the driver. This will be called before any other methods are called.
     * If Init returns anything other than VRInitError_None the driver DLL will be unloaded.
     *
@@ -51,6 +58,8 @@ public:
     /** Called when the system is leaving Standby mode. The driver should switch itself back to
     full operation. */
     virtual void LeaveStandby() override;
+private:
+    std::unique_ptr<HmdDriver> m_pHmdDriver;
 };
 
 } // namespace smartvr

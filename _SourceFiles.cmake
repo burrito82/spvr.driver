@@ -9,6 +9,8 @@ set(DirFiles
     ClientProvider.h
     ControlInterface.cpp
     ControlInterface.h
+    HmdDriver.cpp
+    HmdDriver.h
     ServerProvider.cpp
     ServerProvider.h
     smartvr.cpp

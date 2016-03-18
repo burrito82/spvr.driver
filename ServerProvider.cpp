@@ -4,6 +4,8 @@
  */
 #include "ServerProvider.h"
 
+#include "HmdDriver.h"
+
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -29,8 +31,17 @@ static const char *const DisplayFrequency_Float = "displayFrequency";
 
 } // namespace keys
 
+SmartServer::SmartServer():
+m_pHmdDriver{}
+{
+
+}
+
+SmartServer::~SmartServer() = default;
+
 vr::EVRInitError SmartServer::Init(vr::IDriverLog *pDriverLog, vr::IServerDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir)
 {
+    m_pHmdDriver = std::make_unique<HmdDriver>(pDriverHost);
     return vr::EVRInitError::VRInitError_None;
 }
 
@@ -49,13 +60,23 @@ uint32_t SmartServer::GetTrackedDeviceCount()
 /** returns a single HMD */
 vr::ITrackedDeviceServerDriver *SmartServer::GetTrackedDeviceDriver(uint32_t unWhich, const char *pchInterfaceVersion)
 {
-    return nullptr;
+    if (std::string{pchInterfaceVersion} != vr::ITrackedDeviceServerDriver_Version)
+    {
+        return nullptr;
+    }
+
+    return m_pHmdDriver.get();
 }
 
 /** returns a single HMD by ID */
 vr::ITrackedDeviceServerDriver *SmartServer::FindTrackedDeviceDriver(const char *pchId, const char *pchInterfaceVersion)
 {
-    return nullptr;
+    if (std::string{pchInterfaceVersion} != vr::ITrackedDeviceServerDriver_Version)
+    {
+        return nullptr;
+    }
+
+    return m_pHmdDriver.get();
 }
 
 /** Allows the driver do to some work in the main loop of the server. */
