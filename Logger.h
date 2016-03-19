@@ -30,6 +30,7 @@ public:
 private:
     ControlInterface *m_pControlInterface;
     std::vector<vr::IDriverLog *> m_vecDriverLogs;
+    std::string m_strLinePrefix;
 };
 
 } // namespace smartvr

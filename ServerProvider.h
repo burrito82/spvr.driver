@@ -7,15 +7,18 @@
 
 #include "openvr_driver.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace smartvr
 {
 
 class HmdDriver;
+class Logger;
 
 class SmartServer final : public vr::IServerTrackedDeviceProvider
 {
+    Logger *m_pLogger;
 public:
     SmartServer();
     ~SmartServer();
@@ -29,19 +32,19 @@ public:
     *	config files.
     * pchDriverInstallDir - The absolute path of the root directory for the driver.
     */
-    virtual vr::EVRInitError Init(vr::IDriverLog *pDriverLog, vr::IServerDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir) override;
+    virtual vr::EVRInitError Init(vr::IDriverLog *pDriverLog, vr::IServerDriverHost *pDriverHost, char const *pchUserDriverConfigDir, char const *pchDriverInstallDir) override;
 
     /** cleans up the driver right before it is unloaded */
     virtual void Cleanup() override;
 
     /** returns the number of HMDs that this driver manages that are physically connected. */
-    virtual uint32_t GetTrackedDeviceCount() override;
+    virtual std::uint32_t GetTrackedDeviceCount() override;
 
     /** returns a single HMD */
-    virtual vr::ITrackedDeviceServerDriver *GetTrackedDeviceDriver(uint32_t unWhich, const char *pchInterfaceVersion) override;
+    virtual vr::ITrackedDeviceServerDriver *GetTrackedDeviceDriver(std::uint32_t uWhich, char const *pchInterfaceVersion) override;
 
     /** returns a single HMD by ID */
-    virtual vr::ITrackedDeviceServerDriver* FindTrackedDeviceDriver(const char *pchId, const char *pchInterfaceVersion) override;
+    virtual vr::ITrackedDeviceServerDriver* FindTrackedDeviceDriver(char const *pchId, char const *pchInterfaceVersion) override;
 
     /** Allows the driver do to some work in the main loop of the server. */
     virtual void RunFrame() override;

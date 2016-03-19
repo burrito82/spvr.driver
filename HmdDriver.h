@@ -13,18 +13,22 @@
 namespace smartvr
 {
 
+class Logger;
+
 class HmdDriver final : public vr::ITrackedDeviceServerDriver, public vr::IVRDisplayComponent
 {
 public:
-    explicit HmdDriver(vr::IServerDriverHost *pServerDriverHost);
+    explicit HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLog = nullptr);
     ~HmdDriver() = default;
 
-private:
-    std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError *pError);
     void RunFrame();
 
+private:
+    std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError &rError);
+
     vr::IServerDriverHost *m_pServerDriverHost;
-    uint32_t m_uObjectId;
+    Logger *m_pDriverLog;
+    std::uint32_t m_uObjectId;
 
     std::string m_sSerialNumber;
     std::string m_sModelNumber;
@@ -40,6 +44,7 @@ private:
     std::int32_t m_iRenderWidth;
     std::int32_t m_iRenderHeight;
 
+
     // ITrackedDeviceServerDriver
 public:
 
@@ -51,7 +56,7 @@ public:
     * ITrackedDeviceServerDriver object should be kept to a minimum until it is activated.
     * The pose listener is guaranteed to be valid until Deactivate is called, but
     * should not be used after that point. */
-    virtual vr::EVRInitError Activate(std::uint32_t unObjectId) override;
+    virtual vr::EVRInitError Activate(std::uint32_t uObjectId) override;
 
     /** This is called when The VR system is switching from this Hmd being the active display
     * to another Hmd being the active display. The driver should clean whatever memory
@@ -68,7 +73,7 @@ public:
     /** A VR Client has made this debug request of the driver. The set of valid requests is entirely
     * up to the driver and the client to figure out, as is the format of the response. Responses that
     * exceed the length of the supplied buffer should be truncated and null terminated */
-    virtual void DebugRequest(char const *pchRequest, char *pchResponseBuffer, std::uint32_t unResponseBufferSize) override;
+    virtual void DebugRequest(char const *pchRequest, char *pchResponseBuffer, std::uint32_t uResponseBufferSize) override;
 
     // ------------------------------------
     // Tracking Methods
@@ -99,7 +104,7 @@ public:
     * the trailing null. If the buffer is too small the error will be TrackedProp_BufferTooSmall. Strings will
     * generally fit in buffers of k_unTrackingStringSize characters. Drivers may not return strings longer than
     * k_unMaxPropertyStringSize. */
-    virtual std::uint32_t GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, char *pchValue, std::uint32_t unBufferSize, vr::ETrackedPropertyError *pError) override;
+    virtual std::uint32_t GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, char *pchValue, std::uint32_t uBufferSize, vr::ETrackedPropertyError *pError) override;
 
     // IVRDisplayComponent
 public:
@@ -108,7 +113,7 @@ public:
     // ------------------------------------
 
     /** Size and position that the window needs to be on the VR display. */
-    virtual void GetWindowBounds(std::int32_t *pnX, std::int32_t *pnY, std::uint32_t *pnWidth, std::uint32_t *pnHeight) override;
+    virtual void GetWindowBounds(std::int32_t *piX, std::int32_t *piY, std::uint32_t *puWidth, std::uint32_t *puHeight) override;
 
     /** Returns true if the display is extending the desktop. */
     virtual bool IsDisplayOnDesktop() override;
@@ -120,7 +125,7 @@ public:
     virtual void GetRecommendedRenderTargetSize(std::uint32_t *pnWidth, std::uint32_t *pnHeight) override;
 
     /** Gets the viewport in the frame buffer to draw the output of the distortion into */
-    virtual void GetEyeOutputViewport(vr::EVREye eEye, std::uint32_t *pnX, std::uint32_t *pnY, std::uint32_t *pnWidth, std::uint32_t *pnHeight) override;
+    virtual void GetEyeOutputViewport(vr::EVREye eEye, std::uint32_t *puX, std::uint32_t *puY, std::uint32_t *puWidth, std::uint32_t *puHeight) override;
 
     /** The components necessary to build your own projection matrix in case your
     * application is doing something fancy like infinite Z */
@@ -135,20 +140,20 @@ public:
     // -----------------------------------
 
     /** Specific to Oculus compositor support, textures supplied must be created using this method. */
-    virtual void CreateSwapTextureSet(std::uint32_t unPid, std::uint32_t unFormat, std::uint32_t unWidth, std::uint32_t unHeight, void *(*pSharedTextureHandles)[2]) override;
+    //virtual void CreateSwapTextureSet(std::uint32_t uPid, std::uint32_t uFormat, std::uint32_t uWidth, std::uint32_t uHeight, void *(*pSharedTextureHandles)[2]) override;
 
     /** Used to textures created using CreateSwapTextureSet.  Only one of the set's handles needs to be used to destroy the entire set. */
-    virtual void DestroySwapTextureSet(void *pSharedTextureHandle) override;
+    //virtual void DestroySwapTextureSet(void *pSharedTextureHandle) override;
 
     /** Used to purge all texture sets for a given process. */
-    virtual void DestroyAllSwapTextureSets(std::uint32_t unPid) override;
+    //virtual void DestroyAllSwapTextureSets(std::uint32_t uPid) override;
 
     /** Call once per layer to draw for this frame.  One shared texture handle per eye.  Textures must be created
     * using CreateSwapTextureSet and should be alternated per frame.  Call Present once all layers have been submitted. */
-    virtual void SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_t const (&bounds)[2], vr::HmdMatrix34_t const *pPose) override;
+    //virtual void SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_t const (&bounds)[2], vr::HmdMatrix34_t const *pPose) override;
 
     /** Submits queued layers for display. */
-    virtual void Present(void *hSyncTexture) override;
+    //virtual void Present(void *hSyncTexture) override;
 };
 
 } // namespace smartvr

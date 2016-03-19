@@ -60,26 +60,26 @@ public:
 
     std::string const GetLine(std::size_t iLine) const
     {
-        return std::string{static_cast<char const *>(&m_aLogLines[iLine * S_iLineLength])};
+        return std::string{const_cast<char const *>(&m_aLogLines[iLine * S_iLineLength])};
     }
 
     std::string const GetNext()
     {
         if (m_iLinesUnread > 0)
         {
-            auto const iIndex = m_iNextRead;
+            auto const iLineIndex = m_iNextRead;
             m_iNextRead = (m_iNextRead + 1) % S_iLines;
             --m_iLinesUnread;
-            return GetLine(iIndex * S_iLineLength);
+            return GetLine(iLineIndex);
         }
         return "";
     }
 
 private:
-    std::size_t m_iLinesUnread = 0;
-    std::size_t m_iNextRead = 0;
-    std::size_t m_iNextWrite = 0;
-    char m_aLogLines[S_iLineLength * S_iLines];
+    std::size_t volatile m_iLinesUnread = 0;
+    std::size_t volatile m_iNextRead = 0;
+    std::size_t volatile m_iNextWrite = 0;
+    char volatile m_aLogLines[S_iLineLength * S_iLines];
 };
 
 struct SharedMemoryContent final
@@ -100,7 +100,7 @@ public:
     {
         if (S_eShmMode == ShmConfig::CONTROL)
         {
-            m_pShmObject = std::make_unique<windows_shared_memory>(create_only, S_aShmName, read_write, sizeof(SharedMemoryContent));
+            m_pShmObject = std::make_unique<windows_shared_memory>(create_only, S_aShmName, read_write, 2u * sizeof(SharedMemoryContent));
         }
         else
         {

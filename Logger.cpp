@@ -9,7 +9,9 @@
 #include <cstring>
 #include <fstream>
 #include <memory>
+#include <sstream>
 #include <string>
+#include <thread>
 
 namespace smartvr
 {
@@ -18,7 +20,9 @@ Logger::Logger(ControlInterface *pControlInterface):
     m_pControlInterface{pControlInterface},
     m_vecDriverLogs{}
 {
-
+    std::ostringstream ss{};
+    ss << std::this_thread::get_id() << ": ";
+    m_strLinePrefix = ss.str();
 }
 
 void Logger::AddDriverLog(vr::IDriverLog *pDriverLog)
@@ -42,11 +46,11 @@ void Logger::Log(const char *pchLogMessage)
 {
     if (m_pControlInterface)
     {
-        m_pControlInterface->Log(std::string{pchLogMessage});
+        m_pControlInterface->Log(m_strLinePrefix + std::string{pchLogMessage});
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        pDriverLog->Log(pchLogMessage);
+        pDriverLog->Log((m_strLinePrefix + pchLogMessage).c_str());
     }
 }
 
@@ -54,11 +58,11 @@ void Logger::Log(std::string const &strLogMessage)
 {
     if (m_pControlInterface)
     {
-        m_pControlInterface->Log(strLogMessage);
+        m_pControlInterface->Log(m_strLinePrefix + strLogMessage);
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        pDriverLog->Log(strLogMessage.c_str());
+        pDriverLog->Log((m_strLinePrefix + strLogMessage).c_str());
     }
 }
 

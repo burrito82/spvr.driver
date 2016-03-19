@@ -7,11 +7,16 @@
 
 #include "openvr_driver.h"
 
+#include <cstdint>
+
 namespace smartvr
 {
 
+class Logger;
+
 class SmartClient final : public vr::IClientTrackedDeviceProvider
 {
+    Logger *m_pLogger;
 public:
     /** initializes the driver. This will be called before any other methods are called,
     * except BIsHmdPresent(). BIsHmdPresent is called outside of the Init/Cleanup pair.
@@ -23,7 +28,7 @@ public:
     *	config files.
     * pchDriverInstallDir - The absolute path of the root directory for the driver.
     */
-    virtual vr::EVRInitError Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir) override;
+    virtual vr::EVRInitError Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, char const *pchUserDriverConfigDir, char const *pchDriverInstallDir) override;
 
     /** cleans up the driver right before it is unloaded */
     virtual void Cleanup() override;
@@ -33,10 +38,10 @@ public:
     * such as hooking process functions or leaving resources loaded. Init will not be called before
     * this method and Cleanup will not be called after it.
     */
-    virtual bool BIsHmdPresent(const char *pchUserConfigDir) override;
+    virtual bool BIsHmdPresent(char const *pchUserConfigDir) override;
 
     /** called when the client inits an HMD to let the client driver know which one is in use */
-    virtual vr::EVRInitError SetDisplayId(const char *pchDisplayId) override;
+    virtual vr::EVRInitError SetDisplayId(char const *pchDisplayId) override;
 
     /** Returns the stencil mesh information for the current HMD. If this HMD does not have a stencil mesh the vertex data and count will be
     * NULL and 0 respectively. This mesh is meant to be rendered into the stencil buffer (or into the depth buffer setting nearz) before rendering
@@ -48,7 +53,7 @@ public:
 
     /** Get the MC image for the current HMD.
     * Returns the size in bytes of the buffer required to hold the specified resource. */
-    virtual uint32_t GetMCImage(uint32_t *pImgWidth, uint32_t *pImgHeight, uint32_t *pChannels, void *pDataBuffer, uint32_t unBufferLen) override;
+    virtual std::uint32_t GetMCImage(std::uint32_t *pImgWidth, std::uint32_t *pImgHeight, std::uint32_t *pChannels, void *pDataBuffer, std::uint32_t unBufferLen) override;
 };
 
 } // namespace smartvr

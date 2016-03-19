@@ -11,30 +11,37 @@
 
 #include <cstring>
 #include <fstream>
+#include <memory>
 
-namespace smartvr
+namespace
 {
 
+std::unique_ptr<smartvr::SmartClient> S_pClientInstance{};
+std::unique_ptr<smartvr::SmartServer> S_pServerInstance{};
 
-
-} // namespace smartvr
+} // unnamed namespace
 
 char const copyright[] =
 "Copyright (c) 2016\n\tSomebody.  All rights reserved.\n\n";
 
 void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCode)
 {
-    static smartvr::SmartClient S_oClientInstance{};
-    static smartvr::SmartServer S_oServerInstance{};
-
     if (0 == std::strcmp(vr::IClientTrackedDeviceProvider_Version, pInterfaceName))
     {
-        return static_cast<vr::IClientTrackedDeviceProvider *>(&S_oClientInstance);
+        if (!S_pClientInstance)
+        {
+            S_pClientInstance = std::make_unique<smartvr::SmartClient>();
+        }
+        return static_cast<vr::IClientTrackedDeviceProvider *>(S_pClientInstance.get());
     }
 
     if (0 == std::strcmp(vr::IServerTrackedDeviceProvider_Version, pInterfaceName))
     {
-        return static_cast<vr::IServerTrackedDeviceProvider *>(&S_oServerInstance);
+        if (!S_pServerInstance)
+        {
+            S_pServerInstance = std::make_unique<smartvr::SmartServer>();
+        }
+        return static_cast<vr::IServerTrackedDeviceProvider *>(S_pServerInstance.get());
     }
 
     if (pReturnCode)

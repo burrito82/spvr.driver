@@ -18,23 +18,6 @@
 namespace smartvr
 {
 
-namespace keys
-{
-
-static const char *const Section = "smartvr";
-static const char *const SerialNumber_String = "0000-0000-0000-0000";
-static const char *const ModelNumber_String = "modelNumber";
-static const char *const WindowX_Int32 = "windowX";
-static const char *const WindowY_Int32 = "windowY";
-static const char *const WindowWidth_Int32 = "windowWidth";
-static const char *const WindowHeight_Int32 = "windowHeight";
-static const char *const RenderWidth_Int32 = "renderWidth";
-static const char *const RenderHeight_Int32 = "renderHeight";
-static const char *const SecondsFromVsyncToPhotons_Float = "secondsFromVsyncToPhotons";
-static const char *const DisplayFrequency_Float = "displayFrequency";
-
-} // namespace keys
-
 /** initializes the driver. This will be called before any other methods are called,
 * except BIsHmdPresent(). BIsHmdPresent is called outside of the Init/Cleanup pair.
 * If Init returns anything other than VRInitError_None the driver DLL will be unloaded.
@@ -45,22 +28,39 @@ static const char *const DisplayFrequency_Float = "displayFrequency";
 *	config files.
 * pchDriverInstallDir - The absolute path of the root directory for the driver.
 */
-vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, const char *pchUserDriverConfigDir, const char *pchDriverInstallDir)
+vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriverHost *pDriverHost, char const *pchUserDriverConfigDir, char const *pchDriverInstallDir)
 {
-    auto &rContext = Context::GetInstance();
-    rContext.GetLogger().AddDriverLog(pDriverLog);
-    /*debug << "SmartClient::Init(...)\n"
-        << "pchUserDriverConfigDir: " << pchUserDriverConfigDir << "\n"
-        << "pchDriverInstallDir: " << pchDriverInstallDir << std::endl;*/
-    rContext.GetLogger().Log("Hello World!");
+    Context *pContext = nullptr;
+    try
+    {
+        pContext = &Context::GetInstance();
+    }
+    catch (...)
+    {
+        return vr::VRInitError_Init_HmdNotFound;
+    }
+    m_pLogger = &pContext->GetLogger();
+    m_pLogger->AddDriverLog(pDriverLog);
+
+    if (!pchUserDriverConfigDir)
+    {
+        pchUserDriverConfigDir = "nullptr";
+    }
+    if (!pchDriverInstallDir)
+    {
+        pchDriverInstallDir = "nullptr";
+    }
+
+    m_pLogger->Log(std::string{"SmartClient::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
+    vr::IVRSettings *pSettings = pDriverHost->GetSettings(vr::IVRSettings_Version);
     return vr::EVRInitError::VRInitError_None;
 }
 
 /** cleans up the driver right before it is unloaded */
 void SmartClient::Cleanup()
 {
-    Context::GetInstance().GetLogger().Log("SmartClient::Cleanup()");
-    Context::Destroy();
+    m_pLogger->Log("SmartClient::Cleanup()\n");
+    //Context::Destroy();
 }
 
 /** Called when the client needs to inform an application if an HMD is attached that uses
@@ -68,21 +68,28 @@ void SmartClient::Cleanup()
 * such as hooking process functions or leaving resources loaded. Init will not be called before
 * this method and Cleanup will not be called after it.
 */
-bool SmartClient::BIsHmdPresent(const char *pchUserConfigDir)
+bool SmartClient::BIsHmdPresent(char const *pchUserConfigDir)
 {
     if (pchUserConfigDir == nullptr)
     {
         pchUserConfigDir = "nullptr";
     }
-    //debug << "SmartClient::BIsHmdPresent(\"" << pchUserConfigDir << "\")" << std::endl;
+    if (m_pLogger)
+    {
+        m_pLogger->Log(std::string{"SmartClient::BIsHmdPresent(\""} + pchUserConfigDir + "\")\n");
+    }
     return true;
 }
 
 /** called when the client inits an HMD to let the client driver know which one is in use */
-vr::EVRInitError SmartClient::SetDisplayId(const char *pchDisplayId)
+vr::EVRInitError SmartClient::SetDisplayId(char const *pchDisplayId)
 {
-    //debug << "SmartClient::SetDisplayId(\"" << pchDisplayId << "\")" << std::endl;
-    return vr::EVRInitError::VRInitError_None;
+    if (pchDisplayId == nullptr)
+    {
+        pchDisplayId = "nullptr";
+    }
+    m_pLogger->Log(std::string{"SmartClient::SetDisplayId(\""} + pchDisplayId + "\")\n");
+    return vr::VRInitError_None;
 }
 
 /** Returns the stencil mesh information for the current HMD. If this HMD does not have a stencil mesh the vertex data and count will be
@@ -93,15 +100,15 @@ vr::EVRInitError SmartClient::SetDisplayId(const char *pchDisplayId)
 */
 vr::HiddenAreaMesh_t SmartClient::GetHiddenAreaMesh(vr::EVREye eEye)
 {
-    //debug << "SmartClient::GetHiddenAreaMesh(" << eEye << ")" << std::endl;
-    return vr::HiddenAreaMesh_t{nullptr, 0};
+    m_pLogger->Log(std::string{"SmartClient::GetHiddenAreaMesh("} + std::to_string(eEye) + ")\n");
+    return vr::HiddenAreaMesh_t{nullptr, 0u};
 }
 
 /** Get the MC image for the current HMD.
 * Returns the size in bytes of the buffer required to hold the specified resource. */
-uint32_t SmartClient::GetMCImage(uint32_t *pImgWidth, uint32_t *pImgHeight, uint32_t *pChannels, void *pDataBuffer, uint32_t unBufferLen)
+uint32_t SmartClient::GetMCImage(std::uint32_t *pImgWidth, std::uint32_t *pImgHeight, std::uint32_t *pChannels, void *pDataBuffer, std::uint32_t unBufferLen)
 {
-    //debug << "SmartClient::GetMCImage(...)" << std::endl;
+    m_pLogger->Log("SmartClient::GetMCImage(...)\n");
     return 0;
 }
 
