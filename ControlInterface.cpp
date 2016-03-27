@@ -88,6 +88,7 @@ struct SharedMemoryContent final
     ~SharedMemoryContent() = default;
 
     ShmLog Log;
+    glm::quat m_qRotation;
 };
 
 class SharedMemory final
@@ -125,6 +126,11 @@ public:
         return m_pMemoryContent;
     }
 
+    SharedMemoryContent const *operator->() const
+    {
+        return m_pMemoryContent;
+    }
+
 private:
     std::unique_ptr<windows_shared_memory> m_pShmObject;
     std::unique_ptr<mapped_region> m_pMappedRegion;
@@ -145,6 +151,9 @@ public:
 
     void Log(std::string const &strMessage);
     std::string const PullLog();
+
+    void SetRotation(glm::quat const &qRotation);
+    glm::quat const &GetRotation() const;
 private:
     std::mutex m_oMutex;
     SharedMemory m_oSharedMemory;
@@ -177,6 +186,26 @@ std::string const ControlInterface::PullLog()
 std::string const ControlInterface::ControlInterfaceImpl::PullLog()
 {
     return m_oSharedMemory->Log.GetNext();
+}
+
+void ControlInterface::SetRotation(glm::quat const &qRotation)
+{
+    m_pImpl->SetRotation(qRotation);
+}
+
+void ControlInterface::ControlInterfaceImpl::SetRotation(glm::quat const &qRotation)
+{
+    m_oSharedMemory->m_qRotation = qRotation;
+}
+
+glm::quat const ControlInterface::GetRotation() const
+{
+    return m_pImpl->GetRotation();
+}
+
+glm::quat const &ControlInterface::ControlInterfaceImpl::GetRotation() const
+{
+    return m_oSharedMemory->m_qRotation;
 }
 
 } // namespace smartvr

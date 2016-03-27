@@ -50,7 +50,7 @@ void Logger::Log(const char *pchLogMessage)
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        pDriverLog->Log((m_strLinePrefix + pchLogMessage).c_str());
+        //pDriverLog->Log((m_strLinePrefix + pchLogMessage).c_str());
     }
 }
 
@@ -62,7 +62,7 @@ void Logger::Log(std::string const &strLogMessage)
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        pDriverLog->Log((m_strLinePrefix + strLogMessage).c_str());
+        //pDriverLog->Log((m_strLinePrefix + strLogMessage).c_str());
     }
 }
 

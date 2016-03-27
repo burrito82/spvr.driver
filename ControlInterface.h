@@ -5,6 +5,8 @@
 #ifndef SVR_CONTROLINTERFACE_H
 #define SVR_CONTROLINTERFACE_H
 
+#include "glm/gtc/quaternion.hpp"
+
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -21,6 +23,9 @@ public:
     // logging
     void Log(std::string const &strMessage);
     std::string const PullLog();
+
+    void SetRotation(glm::quat const &qRotation);
+    glm::quat const GetRotation() const;
 
     class ControlInterfaceException final : std::runtime_error
     {

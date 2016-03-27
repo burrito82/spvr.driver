@@ -18,6 +18,7 @@ class SmartClient final : public vr::IClientTrackedDeviceProvider
 {
     Logger *m_pLogger;
 public:
+    SmartClient();
     /** initializes the driver. This will be called before any other methods are called,
     * except BIsHmdPresent(). BIsHmdPresent is called outside of the Init/Cleanup pair.
     * If Init returns anything other than VRInitError_None the driver DLL will be unloaded.

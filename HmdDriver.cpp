@@ -4,8 +4,15 @@
  */
 #include "HmdDriver.h"
 
+#include "Context.h"
+#include "ControlInterface.h"
 #include "Logger.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/quaternion.hpp"
+
+#include <chrono>
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -19,17 +26,35 @@ HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLo
     m_pDriverLog{pDriverLog},
     m_uObjectId{vr::k_unTrackedDeviceIndexInvalid},
     m_sSerialNumber("SVR0815"),
-    m_sModelNumber("smartvr.driver"),
+    m_sModelNumber("SmartVR Driver 0x0000"),
     m_fIPD{0.0635f},
     m_fDisplayFrequency{90.0f},
-    m_fSecondsFromVsyncToPhotons{0.1f},
+    m_fSecondsFromVsyncToPhotons{0.0111111f},
     m_iWindowX{},
     m_iWindowY{},
     m_iWindowWidth{1280},
     m_iWindowHeight{720},
     m_iRenderWidth{640},
-    m_iRenderHeight{360}
+    m_iRenderHeight{360},
+    m_oPoseUpdateThread{}
 {
+    m_fDisplayFrequency = 30.0f;
+    /*auto pSettings = pServerDriverHost->GetSettings(vr::IVRSettings_Version);
+    m_fIPD = pSettings->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_IPD_Float, 0.063f);
+    m_iWindowWidth = 2160;
+    m_iWindowHeight = 1200;
+    m_iRenderWidth = 1512;
+    m_iRenderHeight = 1680;*/
+}
+
+char const *HmdDriver::GetSerialNumber() const
+{
+    return m_sSerialNumber.c_str();
+}
+
+char const *HmdDriver::GetModelNumber() const
+{
+    return m_sModelNumber.c_str();
 }
 
 vr::EVRInitError HmdDriver::Activate(std::uint32_t uObjectId)
@@ -39,6 +64,20 @@ vr::EVRInitError HmdDriver::Activate(std::uint32_t uObjectId)
         m_pDriverLog->Log(std::string{"HmdDriver::Activate("} + std::to_string(uObjectId) + ")\n");
     }
     m_uObjectId = uObjectId;
+    /*m_oPoseUpdateThread = std::thread{
+        [this]()
+        {
+            volatile auto uObjectId = m_uObjectId;
+            vr::DriverPose_t pose;
+            while (uObjectId != vr::k_unTrackedDeviceIndexInvalid)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds{1});
+                pose = GetPose();
+                m_pServerDriverHost->TrackedDevicePoseUpdated(uObjectId, pose);
+                uObjectId = m_uObjectId;
+            }
+        }
+    };*/
     return vr::VRInitError_None;
 }
 
@@ -49,6 +88,10 @@ void HmdDriver::Deactivate()
         m_pDriverLog->Log("HmdDriver::Deactivate()\n");
     }
     m_uObjectId = vr::k_unTrackedDeviceIndexInvalid;
+    if (m_oPoseUpdateThread.joinable())
+    {
+        m_oPoseUpdateThread.join();
+    }
 }
 
 void HmdDriver::PowerOff()
@@ -85,25 +128,24 @@ void HmdDriver::DebugRequest(char const *pchRequest, char *pchResponseBuffer, st
 vr::DriverPose_t HmdDriver::GetPose()
 {
     vr::DriverPose_t pose{};
+    pose.poseTimeOffset = 0.05;
     pose.poseIsValid = true;
     pose.result = vr::TrackingResult_Running_OK;
     pose.deviceIsConnected = true;
+    pose.willDriftInYaw = true;
 
-    pose.qWorldFromDriverRotation = {1.0, 0.0, 0.0, 0.0};
-    pose.qDriverFromHeadRotation = {1.0, 0.0, 0.0, 0.0};
+    pose.qWorldFromDriverRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
+    pose.qDriverFromHeadRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
 
     static int iCounter = 0;
-    if (false)
-    {
-        double w = 1.0 - (static_cast<double>(iCounter) / 100.0);
-        double x = (static_cast<double>(iCounter) / 100.0);
-        double d = 1.0 / (w + x);
-        w *= d;
-        x *= d;
-        pose.qDriverFromHeadRotation.w = w;
-        pose.qDriverFromHeadRotation.x = x;
-        ++iCounter;
-    }
+    //glm::vec3 const v3ViewDir = glm::normalize(glm::vec3{std::sin(static_cast<float>(iCounter++) * 0.01f), 0.0f, -1.0f});
+    //glm::quat const qRotation = glm::rotation(glm::vec3{0.0f, 0.0f, -1.0f}, v3ViewDir);
+    glm::quat const qRotation = Context::GetInstance().GetControlInterface().GetRotation();
+
+    pose.qRotation.w = qRotation.w;
+    pose.qRotation.x = qRotation.x;
+    pose.qRotation.y = qRotation.y;
+    pose.qRotation.z = qRotation.z;
 
     if (m_pDriverLog)
     {
@@ -115,23 +157,30 @@ vr::DriverPose_t HmdDriver::GetPose()
 
 bool HmdDriver::GetBoolTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError *pError)
 {
-    *pError = vr::TrackedProp_Success;
+    vr::ETrackedPropertyError error = vr::TrackedProp_Success;
     bool bRetVal = false;
 
     switch (prop)
     {
-    case vr::Prop_IsOnDesktop_Bool:                 /* FALLTHROUGH */
-        // avoid "not fullscreen" warnings from vrmonitor
-    case vr::Prop_ContainsProximitySensor_Bool:     /* FALLTHROUGH */
-    case vr::Prop_BlockServerShutdown_Bool:         /* FALLTHROUGH */
-    case vr::Prop_HasCamera_Bool:
+    case vr::Prop_IsOnDesktop_Bool:
     {
+        //bRetVal = IsDisplayOnDesktop();
+        bRetVal = false;
         break;
     }
+        // avoid "not fullscreen" warnings from vrmonitor
+    //case vr::Prop_ContainsProximitySensor_Bool:     /* FALLTHROUGH */
+    //case vr::Prop_BlockServerShutdown_Bool:         /* FALLTHROUGH */
+    //case vr::Prop_HasCamera_Bool:
     default:
     {
-        *pError = vr::TrackedProp_ValueNotProvidedByDevice;
+        error = vr::TrackedProp_ValueNotProvidedByDevice;
     }
+    }
+
+    if (pError)
+    {
+        *pError = error;
     }
 
     if (m_pDriverLog)
@@ -198,14 +247,15 @@ std::int32_t HmdDriver::GetInt32TrackedDeviceProperty(vr::ETrackedDeviceProperty
         iRetVal = vr::TrackedDeviceClass_HMD;
         break;
     }
-    case vr::Prop_EdidVendorID_Int32:
+    /*case vr::Prop_EdidVendorID_Int32:
     {
         iRetVal = 1234;
         break;
-    }
+    }*/
     default:
     {
-        error = vr::TrackedProp_UnknownProperty;
+        //error = vr::TrackedProp_UnknownProperty;
+        error = vr::TrackedProp_ValueNotProvidedByDevice;
     }
     }
 
@@ -253,27 +303,25 @@ vr::HmdMatrix34_t HmdDriver::GetMatrix34TrackedDeviceProperty(vr::ETrackedDevice
     {
         m_pDriverLog->Log(std::string{"HmdDriver::GetMatrix34TrackedDeviceProperty("} + std::to_string(prop) + ")\n");
     }
-    //*pError = vr::TrackedProp_ValueNotProvidedByDevice;
-    *pError = vr::TrackedProp_Success;
-    vr::HmdMatrix34_t matIdentity
-    {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f
-    };
-    static int iCounter = 0;
-    {
-        auto w = 1.0f - (static_cast<float>(iCounter) / 100.0f);
-        auto x = (static_cast<float>(iCounter) / 100.0f);
-        auto d = 1.0f / (w + x);
-        w *= d;
-        x *= d;
-        matIdentity.m[0][0] = w;
-        matIdentity.m[0][2] = x;
-        matIdentity.m[2][0] = w;
-        matIdentity.m[2][2] = x;
-        ++iCounter;
-    }
+    *pError = vr::TrackedProp_ValueNotProvidedByDevice;
+    //*pError = vr::TrackedProp_Success;
+    vr::HmdMatrix34_t matIdentity{};
+
+    matIdentity.m[0][0] = 1.f;
+    matIdentity.m[0][1] = 0.f;
+    matIdentity.m[0][2] = 0.f;
+    matIdentity.m[0][3] = 0.f;
+
+    matIdentity.m[1][0] = 0.f;
+    matIdentity.m[1][1] = 1.f;
+    matIdentity.m[1][2] = 0.f;
+    matIdentity.m[1][3] = 0.f;
+
+    matIdentity.m[2][0] = 0.f;
+    matIdentity.m[2][1] = 0.f;
+    matIdentity.m[2][2] = 1.f;
+    matIdentity.m[2][3] = 0.f;
+
     return matIdentity;
 }
 
@@ -308,6 +356,7 @@ std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty
     switch (prop)
     {
     case vr::Prop_ModelNumber_String:
+    case vr::Prop_RenderModelName_String:
     {
         strRetVal = m_sModelNumber;
         break;
@@ -333,6 +382,7 @@ std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty
 
 void HmdDriver::RunFrame()
 {
+    m_pDriverLog->Log("HmdDriver::RunFrame()\n");
     // In a real driver, this should happen from some pose tracking thread.
     // The RunFrame interval is unspecified and can be very irregular if some other
     // driver blocks it for some periodic task.
@@ -357,8 +407,8 @@ void HmdDriver::GetWindowBounds(std::int32_t *piX, std::int32_t *piY, std::uint3
     }
     *piX = m_iWindowX;
     *piY = m_iWindowY;
-    *puWidth = m_iWindowWidth;
-    *puHeight = m_iWindowHeight;
+    *puWidth = static_cast<std::uint32_t>(m_iWindowWidth);
+    *puHeight = static_cast<std::uint32_t>(m_iWindowHeight);
 }
 
 bool HmdDriver::IsDisplayOnDesktop()
@@ -374,7 +424,7 @@ bool HmdDriver::IsDisplayRealDisplay()
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::IsDisplayOnDesktop()\n");
+        m_pDriverLog->Log("HmdDriver::IsDisplayRealDisplay()\n");
     }
     return false;
 }
@@ -438,24 +488,44 @@ vr::DistortionCoordinates_t HmdDriver::ComputeDistortion(vr::EVREye eEye, float 
     return oDistortion;
 }
 
-/*void HmdDriver::CreateSwapTextureSet(std::uint32_t unPid, std::uint32_t unFormat, std::uint32_t unWidth, std::uint32_t unHeight, void *(*pSharedTextureHandles)[2])
+void HmdDriver::CreateSwapTextureSet(std::uint32_t unPid, std::uint32_t unFormat, std::uint32_t unWidth, std::uint32_t unHeight, void *(*pSharedTextureHandles)[2])
 {
+    if (m_pDriverLog)
+    {
+        m_pDriverLog->Log("HmdDriver::CreateSwapTextureSet(...)\n");
+    }
 }
 
 void HmdDriver::DestroySwapTextureSet(void *pSharedTextureHandle)
 {
+    if (m_pDriverLog)
+    {
+        m_pDriverLog->Log("HmdDriver::DestroySwapTextureSet(...)\n");
+    }
 }
 
 void HmdDriver::DestroyAllSwapTextureSets(std::uint32_t unPid)
 {
+    if (m_pDriverLog)
+    {
+        m_pDriverLog->Log("HmdDriver::DestroyAllSwapTextureSets(...)\n");
+    }
 }
 
 void HmdDriver::SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_t const (&bounds)[2], vr::HmdMatrix34_t const *pPose)
 {
+    if (m_pDriverLog)
+    {
+        m_pDriverLog->Log("HmdDriver::SubmitLayer(...)\n");
+    }
 }
 
 void HmdDriver::Present(void *hSyncTexture)
 {
-}*/
+    if (m_pDriverLog)
+    {
+        m_pDriverLog->Log("HmdDriver::Present(...)\n");
+    }
+}
 
 } // namespace smartvr

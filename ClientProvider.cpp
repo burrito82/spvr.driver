@@ -18,6 +18,12 @@
 namespace smartvr
 {
 
+SmartClient::SmartClient():
+m_pLogger{}
+{
+
+}
+
 /** initializes the driver. This will be called before any other methods are called,
 * except BIsHmdPresent(). BIsHmdPresent is called outside of the Init/Cleanup pair.
 * If Init returns anything other than VRInitError_None the driver DLL will be unloaded.
@@ -59,7 +65,10 @@ vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriver
 /** cleans up the driver right before it is unloaded */
 void SmartClient::Cleanup()
 {
-    m_pLogger->Log("SmartClient::Cleanup()\n");
+    if (m_pLogger)
+    {
+        m_pLogger->Log("SmartClient::Cleanup()\n");
+    }
     //Context::Destroy();
 }
 
@@ -78,13 +87,13 @@ bool SmartClient::BIsHmdPresent(char const *pchUserConfigDir)
     {
         m_pLogger->Log(std::string{"SmartClient::BIsHmdPresent(\""} + pchUserConfigDir + "\")\n");
     }
-    return true;
+    return false;
 }
 
 /** called when the client inits an HMD to let the client driver know which one is in use */
 vr::EVRInitError SmartClient::SetDisplayId(char const *pchDisplayId)
 {
-    if (pchDisplayId == nullptr)
+    if (!pchDisplayId)
     {
         pchDisplayId = "nullptr";
     }

@@ -9,6 +9,6 @@
 
 extern char const copyright[];
 
-HMD_DLL_EXPORT void *HmdDriverFactory(const char *pInterfaceName, int *pReturnCode);
+HMD_DLL_EXPORT void *HmdDriverFactory(char const *pInterfaceName, int *pReturnCode);
 
 #endif // SVR_SMARTVR_H

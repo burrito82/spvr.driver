@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <string>
+#include <thread>
 
 namespace smartvr
 {
@@ -22,6 +23,9 @@ public:
     ~HmdDriver() = default;
 
     void RunFrame();
+
+    char const *GetSerialNumber() const;
+    char const *GetModelNumber() const;
 
 private:
     std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError &rError);
@@ -44,6 +48,7 @@ private:
     std::int32_t m_iRenderWidth;
     std::int32_t m_iRenderHeight;
 
+    std::thread m_oPoseUpdateThread;
 
     // ITrackedDeviceServerDriver
 public:
@@ -140,20 +145,20 @@ public:
     // -----------------------------------
 
     /** Specific to Oculus compositor support, textures supplied must be created using this method. */
-    //virtual void CreateSwapTextureSet(std::uint32_t uPid, std::uint32_t uFormat, std::uint32_t uWidth, std::uint32_t uHeight, void *(*pSharedTextureHandles)[2]) override;
+    virtual void CreateSwapTextureSet(std::uint32_t uPid, std::uint32_t uFormat, std::uint32_t uWidth, std::uint32_t uHeight, void *(*pSharedTextureHandles)[2]) override;
 
     /** Used to textures created using CreateSwapTextureSet.  Only one of the set's handles needs to be used to destroy the entire set. */
-    //virtual void DestroySwapTextureSet(void *pSharedTextureHandle) override;
+    virtual void DestroySwapTextureSet(void *pSharedTextureHandle) override;
 
     /** Used to purge all texture sets for a given process. */
-    //virtual void DestroyAllSwapTextureSets(std::uint32_t uPid) override;
+    virtual void DestroyAllSwapTextureSets(std::uint32_t uPid) override;
 
     /** Call once per layer to draw for this frame.  One shared texture handle per eye.  Textures must be created
     * using CreateSwapTextureSet and should be alternated per frame.  Call Present once all layers have been submitted. */
-    //virtual void SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_t const (&bounds)[2], vr::HmdMatrix34_t const *pPose) override;
+    virtual void SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_t const (&bounds)[2], vr::HmdMatrix34_t const *pPose) override;
 
     /** Submits queued layers for display. */
-    //virtual void Present(void *hSyncTexture) override;
+    virtual void Present(void *hSyncTexture) override;
 };
 
 } // namespace smartvr

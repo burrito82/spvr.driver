@@ -56,6 +56,12 @@ vr::EVRInitError SmartServer::Init(vr::IDriverLog *pDriverLog, vr::IServerDriver
         if (pDriverHost)
         {
             m_pHmdDriver = std::make_unique<HmdDriver>(pDriverHost, m_pLogger);
+            pDriverHost->TrackedDeviceAdded(m_pHmdDriver->GetSerialNumber());
+        }
+        else
+        {
+            m_pLogger->Log("Initialization of HmdDriver failed, pDriverHost == nullptr!\n");
+            return vr::VRInitError_Init_HmdNotFound;
         }
     }
     catch (...)
@@ -70,8 +76,12 @@ vr::EVRInitError SmartServer::Init(vr::IDriverLog *pDriverLog, vr::IServerDriver
 /** cleans up the driver right before it is unloaded */
 void SmartServer::Cleanup()
 {
-    m_pLogger->Log("SmartServer::Cleanup()\n");
-    m_pHmdDriver.reset();
+    if (m_pLogger)
+    {
+        m_pLogger->Log("SmartServer::Cleanup()\n");
+    }
+    m_pHmdDriver.reset(nullptr);
+    //Context::Destroy();
 }
 
 /** returns the number of HMDs that this driver manages that are physically connected. */
