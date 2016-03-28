@@ -25,6 +25,11 @@ Logger::Logger(ControlInterface *pControlInterface):
     m_strLinePrefix = ss.str();
 }
 
+Logger::~Logger()
+{
+    m_pControlInterface = nullptr;
+}
+
 void Logger::AddDriverLog(vr::IDriverLog *pDriverLog)
 {
     if (std::find(begin(m_vecDriverLogs), end(m_vecDriverLogs), pDriverLog) == std::end(m_vecDriverLogs))

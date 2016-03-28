@@ -20,6 +20,7 @@ class Logger final : public vr::IDriverLog
 {
 public:
     explicit Logger(ControlInterface *pControlInterface);
+    ~Logger();
 
     void AddDriverLog(vr::IDriverLog *pDriverLog);
     void RemoveDriverLog(vr::IDriverLog *pDriverLog);

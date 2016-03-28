@@ -65,10 +65,10 @@ vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriver
 /** cleans up the driver right before it is unloaded */
 void SmartClient::Cleanup()
 {
-    if (m_pLogger)
+    /*if (m_pLogger)
     {
         m_pLogger->Log("SmartClient::Cleanup()\n");
-    }
+    }*/
     //Context::Destroy();
 }
 

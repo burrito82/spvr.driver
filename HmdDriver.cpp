@@ -38,13 +38,13 @@ HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLo
     m_iRenderHeight{360},
     m_oPoseUpdateThread{}
 {
-    m_fDisplayFrequency = 30.0f;
-    /*auto pSettings = pServerDriverHost->GetSettings(vr::IVRSettings_Version);
+    m_fDisplayFrequency = 60.0f;
+    auto pSettings = pServerDriverHost->GetSettings(vr::IVRSettings_Version);
     m_fIPD = pSettings->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_IPD_Float, 0.063f);
-    m_iWindowWidth = 2160;
-    m_iWindowHeight = 1200;
+    /*m_iWindowWidth = 2160;
+    m_iWindowHeight = 1200;*/
     m_iRenderWidth = 1512;
-    m_iRenderHeight = 1680;*/
+    m_iRenderHeight = 1680;
 }
 
 char const *HmdDriver::GetSerialNumber() const
@@ -128,7 +128,7 @@ void HmdDriver::DebugRequest(char const *pchRequest, char *pchResponseBuffer, st
 vr::DriverPose_t HmdDriver::GetPose()
 {
     vr::DriverPose_t pose{};
-    pose.poseTimeOffset = 0.05;
+    pose.poseTimeOffset = 0.15;
     pose.poseIsValid = true;
     pose.result = vr::TrackingResult_Running_OK;
     pose.deviceIsConnected = true;
@@ -137,9 +137,6 @@ vr::DriverPose_t HmdDriver::GetPose()
     pose.qWorldFromDriverRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
     pose.qDriverFromHeadRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
 
-    static int iCounter = 0;
-    //glm::vec3 const v3ViewDir = glm::normalize(glm::vec3{std::sin(static_cast<float>(iCounter++) * 0.01f), 0.0f, -1.0f});
-    //glm::quat const qRotation = glm::rotation(glm::vec3{0.0f, 0.0f, -1.0f}, v3ViewDir);
     glm::quat const qRotation = Context::GetInstance().GetControlInterface().GetRotation();
 
     pose.qRotation.w = qRotation.w;
@@ -165,13 +162,10 @@ bool HmdDriver::GetBoolTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr
     case vr::Prop_IsOnDesktop_Bool:
     {
         //bRetVal = IsDisplayOnDesktop();
+        // avoid "not fullscreen" warnings from vrmonitor
         bRetVal = false;
         break;
     }
-        // avoid "not fullscreen" warnings from vrmonitor
-    //case vr::Prop_ContainsProximitySensor_Bool:     /* FALLTHROUGH */
-    //case vr::Prop_BlockServerShutdown_Bool:         /* FALLTHROUGH */
-    //case vr::Prop_HasCamera_Bool:
     default:
     {
         error = vr::TrackedProp_ValueNotProvidedByDevice;
@@ -247,14 +241,8 @@ std::int32_t HmdDriver::GetInt32TrackedDeviceProperty(vr::ETrackedDeviceProperty
         iRetVal = vr::TrackedDeviceClass_HMD;
         break;
     }
-    /*case vr::Prop_EdidVendorID_Int32:
-    {
-        iRetVal = 1234;
-        break;
-    }*/
     default:
     {
-        //error = vr::TrackedProp_UnknownProperty;
         error = vr::TrackedProp_ValueNotProvidedByDevice;
     }
     }
@@ -281,7 +269,7 @@ std::uint64_t HmdDriver::GetUint64TrackedDeviceProperty(vr::ETrackedDeviceProper
     case vr::Prop_CurrentUniverseId_Uint64:
     {
         // return a constant that's not 0 (invalid) or 1 (reserved for Oculus)
-        return 2;
+        return 3;
     }
     default:
     {
@@ -304,7 +292,6 @@ vr::HmdMatrix34_t HmdDriver::GetMatrix34TrackedDeviceProperty(vr::ETrackedDevice
         m_pDriverLog->Log(std::string{"HmdDriver::GetMatrix34TrackedDeviceProperty("} + std::to_string(prop) + ")\n");
     }
     *pError = vr::TrackedProp_ValueNotProvidedByDevice;
-    //*pError = vr::TrackedProp_Success;
     vr::HmdMatrix34_t matIdentity{};
 
     matIdentity.m[0][0] = 1.f;

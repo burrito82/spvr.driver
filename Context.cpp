@@ -28,7 +28,10 @@ m_pLogger{std::make_unique<Logger>(m_pControlInterface.get())}
 //Context::~Context() = default;
 Context::~Context()
 {
-    m_pLogger->Log(std::string{"Context::~Context()@"} + std::to_string(reinterpret_cast<int>(this)) + '\n');
+    if (m_pLogger)
+    {
+        m_pLogger->Log(std::string{"Context::~Context()@"} + std::to_string(reinterpret_cast<int>(this)) + '\n');
+    }
 }
 
 Context &Context::GetInstance()
@@ -48,7 +51,7 @@ void Context::Destroy()
     std::lock_guard<std::mutex> oLock{S_oMutex};
     if (S_pContext)
     {
-        //S_pContext.reset();
+        S_pContext.reset();
     }
 }
 
