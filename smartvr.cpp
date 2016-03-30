@@ -21,6 +21,8 @@ spvr::SmartServer S_oServerInstance{};
 
 } // unnamed namespace
 
+char const copyright_valve[] =
+"Copyright (c) 2015, Valve Corporation.  All rights reserved.\n\n";
 char const copyright[] =
 "Copyright (c) 2016\n\tSomebody.  All rights reserved.\n\n";
 
