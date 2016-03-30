@@ -2,8 +2,8 @@
  * Copyright (c) 2016
  *  Somebody
  */
-#ifndef SVR_HMDDRIVER_H
-#define SVR_HMDDRIVER_H
+#ifndef SPVR_HMDDRIVER_H
+#define SPVR_HMDDRIVER_H
 
 #include "openvr_driver.h"
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <thread>
 
-namespace smartvr
+namespace spvr
 {
 
 class Logger;
@@ -161,6 +161,6 @@ public:
     virtual void Present(void *hSyncTexture) override;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_HMDDRIVER_H
+#endif // SPVR_HMDDRIVER_H

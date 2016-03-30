@@ -2,15 +2,15 @@
  * Copyright (c) 2016
  *  Somebody
  */
-#ifndef SVR_SERVERPROVIDER_H
-#define SVR_SERVERPROVIDER_H
+#ifndef SPVR_SERVERPROVIDER_H
+#define SPVR_SERVERPROVIDER_H
 
 #include "openvr_driver.h"
 
 #include <cstdint>
 #include <memory>
 
-namespace smartvr
+namespace spvr
 {
 
 class HmdDriver;
@@ -65,6 +65,6 @@ private:
     std::unique_ptr<HmdDriver> m_pHmdDriver;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_SERVERPROVIDER_H
+#endif // SPVR_SERVERPROVIDER_H

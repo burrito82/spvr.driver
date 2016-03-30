@@ -18,15 +18,15 @@
 #include <memory>
 #include <string>
 
-namespace smartvr
+namespace spvr
 {
 
 HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLog):
     m_pServerDriverHost{pServerDriverHost},
     m_pDriverLog{pDriverLog},
     m_uObjectId{vr::k_unTrackedDeviceIndexInvalid},
-    m_sSerialNumber("SVR0815"),
-    m_sModelNumber("SmartVR Driver 0x0000"),
+    m_sSerialNumber("SPVR0815"),
+    m_sModelNumber("SmartPhoneVR Driver 0x0000"),
     m_fIPD{0.0635f},
     m_fDisplayFrequency{90.0f},
     m_fSecondsFromVsyncToPhotons{0.0111111f},
@@ -515,4 +515,4 @@ void HmdDriver::Present(void *hSyncTexture)
     }
 }
 
-} // namespace smartvr
+} // namespace spvr

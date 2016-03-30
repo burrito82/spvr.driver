@@ -2,14 +2,14 @@
  * Copyright (c) 2016
  *  Somebody
  */
-#ifndef SVR_CLIENTPROVIDER_H
-#define SVR_CLIENTPROVIDER_H
+#ifndef SPVR_CLIENTPROVIDER_H
+#define SPVR_CLIENTPROVIDER_H
 
 #include "openvr_driver.h"
 
 #include <cstdint>
 
-namespace smartvr
+namespace spvr
 {
 
 class Logger;
@@ -57,6 +57,6 @@ public:
     virtual std::uint32_t GetMCImage(std::uint32_t *pImgWidth, std::uint32_t *pImgHeight, std::uint32_t *pChannels, void *pDataBuffer, std::uint32_t unBufferLen) override;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_CLIENTPROVIDER_H
+#endif // SPVR_CLIENTPROVIDER_H

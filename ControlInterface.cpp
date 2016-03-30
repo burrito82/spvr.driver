@@ -12,7 +12,7 @@
 #include <mutex>
 #include <string>
 
-namespace smartvr
+namespace spvr
 {
 
 namespace
@@ -26,12 +26,12 @@ enum ShmConfig
     CONTROL
 };
 
-#ifdef SVR_SHM_DRIVER
+#ifdef SPVR_SHM_DRIVER
 static ShmConfig const S_eShmMode = ShmConfig::DRIVER;
-#else // ! SVR_SHM_DRIVER
+#else // ! SPVR_SHM_DRIVER
 static ShmConfig const S_eShmMode = ShmConfig::CONTROL;
-#endif // ! SVR_SHM_DRIVER
-static const char S_aShmName[] = "SmartVR SHM";
+#endif // ! SPVR_SHM_DRIVER
+static const char S_aShmName[] = "SmartPhoneVR SHM";
 
 class ShmLog final
 {
@@ -208,4 +208,4 @@ glm::quat const &ControlInterface::ControlInterfaceImpl::GetRotation() const
     return m_oSharedMemory->m_qRotation;
 }
 
-} // namespace smartvr
+} // namespace spvr

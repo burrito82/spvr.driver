@@ -14,7 +14,7 @@
 #include <memory>
 #include <string>
 
-namespace smartvr
+namespace spvr
 {
 
 SmartServer::SmartServer():
@@ -165,4 +165,4 @@ void SmartServer::LeaveStandby()
     m_pLogger->Log("SmartServer::LeaveStandby()\n");
 }
 
-} // namespace smartvr
+} // namespace spvr

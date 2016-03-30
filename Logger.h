@@ -2,8 +2,8 @@
 * Copyright (c) 2016
 *  Somebody
 */
-#ifndef SVR_LOGGER_H
-#define SVR_LOGGER_H
+#ifndef SPVR_LOGGER_H
+#define SPVR_LOGGER_H
 
 #include "openvr_driver.h"
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace smartvr
+namespace spvr
 {
 
 class ControlInterface;
@@ -34,6 +34,6 @@ private:
     std::string m_strLinePrefix;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_LOGGER_H
+#endif // SPVR_LOGGER_H

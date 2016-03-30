@@ -2,8 +2,8 @@
  * Copyright (c) 2016
  *  Somebody
  */
-#ifndef SVR_CONTROLINTERFACE_H
-#define SVR_CONTROLINTERFACE_H
+#ifndef SPVR_CONTROLINTERFACE_H
+#define SPVR_CONTROLINTERFACE_H
 
 #include "glm/gtc/quaternion.hpp"
 
@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace smartvr
+namespace spvr
 {
 
 class ControlInterface final
@@ -47,6 +47,6 @@ private:
     std::unique_ptr<ControlInterfaceImpl> m_pImpl;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_CONTROLINTERFACE_H
+#endif // SPVR_CONTROLINTERFACE_H

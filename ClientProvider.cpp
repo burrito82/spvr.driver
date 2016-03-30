@@ -15,7 +15,7 @@
 
 #include "openvr_driver.h"
 
-namespace smartvr
+namespace spvr
 {
 
 SmartClient::SmartClient():
@@ -121,4 +121,4 @@ uint32_t SmartClient::GetMCImage(std::uint32_t *pImgWidth, std::uint32_t *pImgHe
     return 0;
 }
 
-} // namespace smartvr
+} // namespace spvr

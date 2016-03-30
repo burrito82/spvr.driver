@@ -2,8 +2,8 @@
  * Copyright (c) 2016
  *  Somebody
  */
-#ifndef SVR_SVRLIBCONFIG_H
-#define SVR_SVRLIBCONFIG_H
+#ifndef SPVR_SVRLIBCONFIG_H
+#define SPVR_SVRLIBCONFIG_H
 
 #if defined(_WIN32)
 #define HMD_DLL_EXPORT extern "C" __declspec(dllexport)
@@ -15,4 +15,4 @@
 #error "Unsupported Platform."
 #endif
 
-#endif // SVR_SVRLIBCONFIG_H
+#endif // SPVR_SVRLIBCONFIG_H

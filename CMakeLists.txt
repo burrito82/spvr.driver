@@ -1,7 +1,7 @@
 # $Id:$
 
 cmake_minimum_required(VERSION 2.8)
-project(driver_smartvr)
+project(driver_spvr)
 
 # gcc
 option(ENABLE_CUSTOM_GCC_FLAGS "g++ specific flags" on)
@@ -84,25 +84,25 @@ endif (Boost_FOUND)
 include_directories(${CUSTOM_HEADERS})
 
 # ControlInterface
-add_definitions(-DSVR_SHM_DRIVER)
+add_definitions(-DSPVR_SHM_DRIVER)
 
 # Including the source files of all source subfolders recursively
 
 include("./_SourceFiles.cmake")
 
-add_library(driver_smartvr SHARED ${ProjectSources})
-target_link_libraries(driver_smartvr
+add_library(driver_spvr SHARED ${ProjectSources})
+target_link_libraries(driver_spvr
     ${CUSTOM_LIBRARIES}
 )
 
 option(COPY_AFTER_BUILD "Copy the dll to a target location, e.g., SteamVR/drivers/..." off)
 if (COPY_AFTER_BUILD)
     set(COPY_AFTER_BUILD_TARGET
-        E:/SteamLibrary/steamapps/common/SteamVR/drivers/smartvr/bin/win32/driver_smartvr.dll
-        CACHE PATH "target location, e.g., (SteamVR/drivers/...)/driver_smartvr.dll")
+        E:/SteamLibrary/steamapps/common/SteamVR/drivers/spvr/bin/win32/driver_spvr.dll
+        CACHE PATH "target location, e.g., (SteamVR/drivers/...)/driver_spvr.dll")
     set(COPY_AFTER_BUILD_BUILD_TYPE "Debug" CACHE PATH "build type, e.g., Debug, Release")
-    add_custom_command(TARGET driver_smartvr POST_BUILD COMMAND ${CMAKE_COMMAND} -E
-        copy ${CMAKE_CURRENT_BINARY_DIR}/${COPY_AFTER_BUILD_BUILD_TYPE}/driver_smartvr.dll
+    add_custom_command(TARGET driver_spvr POST_BUILD COMMAND ${CMAKE_COMMAND} -E
+        copy ${CMAKE_CURRENT_BINARY_DIR}/${COPY_AFTER_BUILD_BUILD_TYPE}/driver_spvr.dll
         ${COPY_AFTER_BUILD_TARGET})
 endif (COPY_AFTER_BUILD)
 

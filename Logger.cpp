@@ -13,7 +13,7 @@
 #include <string>
 #include <thread>
 
-namespace smartvr
+namespace spvr
 {
 
 Logger::Logger(ControlInterface *pControlInterface):
@@ -71,4 +71,4 @@ void Logger::Log(std::string const &strLogMessage)
     }
 }
 
-} // namespace smartvr
+} // namespace spvr

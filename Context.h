@@ -2,14 +2,14 @@
 * Copyright (c) 2016
 *  Somebody
 */
-#ifndef SVR_CONTEXT_H
-#define SVR_CONTEXT_H
+#ifndef SPVR_CONTEXT_H
+#define SPVR_CONTEXT_H
 
 #include "openvr_driver.h"
 
 #include <memory>
 
-namespace smartvr
+namespace spvr
 {
 
 class ControlInterface;
@@ -34,6 +34,6 @@ private:
     std::unique_ptr<Logger> m_pLogger;
 };
 
-} // namespace smartvr
+} // namespace spvr
 
-#endif // SVR_CONTEXT_H
+#endif // SPVR_CONTEXT_H

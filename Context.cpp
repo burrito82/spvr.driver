@@ -9,7 +9,7 @@
 
 #include <mutex>
 
-namespace smartvr
+namespace spvr
 {
 
 namespace
@@ -65,4 +65,4 @@ Logger &Context::GetLogger()
     return *m_pLogger;
 }
 
-} // namespace smartvr
+} // namespace spvr
