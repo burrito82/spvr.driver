@@ -18,6 +18,11 @@
 namespace spvr
 {
 
+static char const copyright_valve[] =
+"Copyright (c) 2015\n\tValve Corporation.  All rights reserved.\n\n";
+static char const copyright[] =
+"Copyright (c) 2016\n\tSomebody.  All rights reserved.\n\n";
+
 SmartClient::SmartClient():
 m_pLogger{}
 {
@@ -57,6 +62,8 @@ vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriver
         pchDriverInstallDir = "nullptr";
     }
 
+    m_pLogger->Log(copyright_valve);
+    m_pLogger->Log(copyright);
     m_pLogger->Log(std::string{"SmartClient::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
     vr::IVRSettings *pSettings = pDriverHost->GetSettings(vr::IVRSettings_Version);
     return vr::EVRInitError::VRInitError_None;
