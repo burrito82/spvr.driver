@@ -27,6 +27,13 @@ public:
     void SetRotation(glm::quat const &qRotation);
     glm::quat const GetRotation() const;
 
+    void SetDistortionCoefficients(float k0, float k1);
+    // returns true if non-default values
+    bool GetDistortionCoefficients(float &k0, float &k1) const;
+
+    void SetDistortionScale(float scale);
+    float GetDistortionScale() const;
+
     class ControlInterfaceException final : std::runtime_error
     {
     public:

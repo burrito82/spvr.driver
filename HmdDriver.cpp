@@ -36,11 +36,20 @@ HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLo
     m_iWindowHeight{720},
     m_iRenderWidth{640},
     m_iRenderHeight{360},
-    m_oPoseUpdateThread{}
+    m_oPoseUpdateThread{},
+    m_fDistortionK0{0.441f},
+    m_fDistortionK1{0.156f},
+    m_fDistortionScale{1.0f}
 {
-    m_fDisplayFrequency = 60.0f;
     auto pSettings = pServerDriverHost->GetSettings(vr::IVRSettings_Version);
     m_fIPD = pSettings->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_IPD_Float, 0.063f);
+    m_fDistortionK0 = pSettings->GetFloat("spvr", "distortion-k0", m_fDistortionK0);
+    m_fDistortionK1 = pSettings->GetFloat("spvr", "distortion-k1", m_fDistortionK1);
+
+    auto &rControlInterface = Context::GetInstance().GetControlInterface();
+    rControlInterface.GetDistortionCoefficients(m_fDistortionK0, m_fDistortionK1);
+    m_fDistortionScale = rControlInterface.GetDistortionScale();
+
     /*m_iWindowWidth = 2160;
     m_iWindowHeight = 1200;*/
     m_iRenderWidth = 1512;
@@ -128,7 +137,7 @@ void HmdDriver::DebugRequest(char const *pchRequest, char *pchResponseBuffer, st
 vr::DriverPose_t HmdDriver::GetPose()
 {
     vr::DriverPose_t pose{};
-    pose.poseTimeOffset = 0.15;
+    pose.poseTimeOffset = 0.015;
     pose.poseIsValid = true;
     pose.result = vr::TrackingResult_Running_OK;
     pose.deviceIsConnected = true;
@@ -179,7 +188,7 @@ bool HmdDriver::GetBoolTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetBoolTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => false\n");
+        //m_pDriverLog->Log(std::string{"HmdDriver::GetBoolTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => false\n");
     }
 
     return bRetVal;
@@ -369,7 +378,7 @@ std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty
 
 void HmdDriver::RunFrame()
 {
-    m_pDriverLog->Log("HmdDriver::RunFrame()\n");
+    //m_pDriverLog->Log("HmdDriver::RunFrame()\n");
     // In a real driver, this should happen from some pose tracking thread.
     // The RunFrame interval is unspecified and can be very irregular if some other
     // driver blocks it for some periodic task.
@@ -381,7 +390,7 @@ void HmdDriver::RunFrame()
     {
         if (m_pDriverLog)
         {
-            m_pDriverLog->Log("HmdDriver::RunFrame(), but m_uObjectId is invalid!\n");
+            //m_pDriverLog->Log("HmdDriver::RunFrame(), but m_uObjectId is invalid!\n");
         }
     }
 }
@@ -465,6 +474,13 @@ vr::DistortionCoordinates_t HmdDriver::ComputeDistortion(vr::EVREye eEye, float 
         m_pDriverLog->Log(std::string{"HmdDriver::ComputeDistortion("} + std::to_string(eEye) + ", "
                           + std::to_string(fU) + ", " + std::to_string(fV) + ")\n");
     }
+
+    auto const r2 = (fU - 0.5f) * (fU - 0.5f) + (fV - 0.5f) * (fV - 0.5f);
+    auto const r4 = r2 * r2;
+    auto const dist = (1.0f + m_fDistortionK0 * r2 + m_fDistortionK1 * r4);
+    fU = (((fU * 2.0f - 1.0f) * dist) * m_fDistortionScale + 1.0f) * 0.5f;
+    fV = (((fV * 2.0f - 1.0f) * dist) * m_fDistortionScale + 1.0f) * 0.5f;
+
     vr::DistortionCoordinates_t oDistortion{};
     oDistortion.rfBlue[0] = fU;
     oDistortion.rfBlue[1] = fV;

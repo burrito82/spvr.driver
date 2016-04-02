@@ -89,6 +89,11 @@ struct SharedMemoryContent final
 
     ShmLog Log;
     glm::quat m_qRotation;
+
+    // radial distortion coefficients Ki for google cardboard v1: 0.441, 0.156
+    float m_fDistortionK0 = 0.441f;
+    float m_fDistortionK1 = 0.156f;
+    float m_fDistortionScale = 1.0f;
 };
 
 class SharedMemory final
@@ -107,16 +112,27 @@ public:
         {
             m_pShmObject = std::make_unique<windows_shared_memory>(open_only, S_aShmName, read_write);
         }
+
         m_pMappedRegion = std::make_unique<mapped_region>(*m_pShmObject, read_write);
-        // XXX: dangerous, non-portable... region might not be perfectly aligned
-        m_pMemoryContent = new (m_pMappedRegion->get_address()) SharedMemoryContent{};
+
+        if (S_eShmMode == ShmConfig::CONTROL)
+        {
+            m_pMemoryContent = new (m_pMappedRegion->get_address()) SharedMemoryContent{};
+        }
+        else
+        {
+            m_pMemoryContent = static_cast<SharedMemoryContent *>(m_pMappedRegion->get_address());
+        }
     }
 
     ~SharedMemory()
     {
         if (m_pMemoryContent)
         {
-            m_pMemoryContent->~SharedMemoryContent();
+            if (S_eShmMode == ShmConfig::CONTROL)
+            {
+                m_pMemoryContent->~SharedMemoryContent();
+            }
             m_pMemoryContent = nullptr;
         }
     }
@@ -154,6 +170,13 @@ public:
 
     void SetRotation(glm::quat const &qRotation);
     glm::quat const &GetRotation() const;
+
+    void SetDistortionCoefficients(float k0, float k1);
+    bool GetDistortionCoefficients(float &k0, float &k1) const;
+
+    void SetDistortionScale(float scale);
+    float GetDistortionScale() const;
+
 private:
     std::mutex m_oMutex;
     SharedMemory m_oSharedMemory;
@@ -206,6 +229,49 @@ glm::quat const ControlInterface::GetRotation() const
 glm::quat const &ControlInterface::ControlInterfaceImpl::GetRotation() const
 {
     return m_oSharedMemory->m_qRotation;
+}
+
+void ControlInterface::SetDistortionCoefficients(float k0, float k1)
+{
+    m_pImpl->SetDistortionCoefficients(k0, k1);
+}
+
+void ControlInterface::ControlInterfaceImpl::SetDistortionCoefficients(float k0, float k1)
+{
+    m_oSharedMemory->m_fDistortionK0 = k0;
+    m_oSharedMemory->m_fDistortionK1 = k1;
+}
+
+bool ControlInterface::GetDistortionCoefficients(float &k0, float &k1) const
+{
+    return m_pImpl->GetDistortionCoefficients(k0, k1);
+}
+
+bool ControlInterface::ControlInterfaceImpl::GetDistortionCoefficients(float &k0, float &k1) const
+{
+    k0 = m_oSharedMemory->m_fDistortionK0;
+    k1 = m_oSharedMemory->m_fDistortionK1;
+    return (k0 != 0.0f || k1 != 0.0f);
+}
+
+void ControlInterface::SetDistortionScale(float scale)
+{
+    m_pImpl->SetDistortionScale(scale);
+}
+
+void ControlInterface::ControlInterfaceImpl::SetDistortionScale(float scale)
+{
+    m_oSharedMemory->m_fDistortionScale = scale;
+}
+
+float ControlInterface::GetDistortionScale() const
+{
+    return m_pImpl->GetDistortionScale();
+}
+
+float ControlInterface::ControlInterfaceImpl::GetDistortionScale() const
+{
+    return m_oSharedMemory->m_fDistortionScale;
 }
 
 } // namespace spvr

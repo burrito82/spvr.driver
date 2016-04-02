@@ -50,6 +50,10 @@ private:
 
     std::thread m_oPoseUpdateThread;
 
+    float m_fDistortionK0;
+    float m_fDistortionK1;
+    float m_fDistortionScale;
+
     // ITrackedDeviceServerDriver
 public:
 
