@@ -28,10 +28,11 @@ public:
     /** Writes a log message to the log file prefixed with the driver name */
     virtual void Log(const char *pchLogMessage) override;
     void Log(std::string const &strLogMessage);
+    void Debug(std::string const &strLogMessage);
 private:
     ControlInterface *m_pControlInterface;
     std::vector<vr::IDriverLog *> m_vecDriverLogs;
-    std::string m_strLinePrefix;
+    std::string m_strDebugLinePrefix;
 };
 
 } // namespace spvr

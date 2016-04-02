@@ -70,7 +70,7 @@ vr::EVRInitError HmdDriver::Activate(std::uint32_t uObjectId)
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::Activate("} + std::to_string(uObjectId) + ")\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::Activate("} +std::to_string(uObjectId) + ")\n");
     }
     m_uObjectId = uObjectId;
     /*m_oPoseUpdateThread = std::thread{
@@ -94,7 +94,7 @@ void HmdDriver::Deactivate()
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::Deactivate()\n");
+        m_pDriverLog->Debug("HmdDriver::Deactivate()\n");
     }
     m_uObjectId = vr::k_unTrackedDeviceIndexInvalid;
     if (m_oPoseUpdateThread.joinable())
@@ -116,7 +116,7 @@ void *HmdDriver::GetComponent(char const *pchComponentNameAndVersion)
     }
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetComponent("} + pchComponentNameAndVersion + ")\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetComponent("} +pchComponentNameAndVersion + ")\n");
     }
     if (std::string{pchComponentNameAndVersion} == vr::IVRDisplayComponent_Version)
     {
@@ -155,7 +155,7 @@ vr::DriverPose_t HmdDriver::GetPose()
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetPose()\n");
+        m_pDriverLog->Debug("HmdDriver::GetPose()\n");
     }
 
     return pose;
@@ -188,7 +188,7 @@ bool HmdDriver::GetBoolTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr
 
     if (m_pDriverLog)
     {
-        //m_pDriverLog->Log(std::string{"HmdDriver::GetBoolTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => false\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetBoolTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => false\n");
     }
 
     return bRetVal;
@@ -232,7 +232,7 @@ float HmdDriver::GetFloatTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, 
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetFloatTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => " + std::to_string(fRetVal) + "\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetFloatTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => " + std::to_string(fRetVal) + "\n");
     }
 
     return fRetVal;
@@ -263,7 +263,7 @@ std::int32_t HmdDriver::GetInt32TrackedDeviceProperty(vr::ETrackedDeviceProperty
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetInt32TrackedDeviceProperty("} + std::to_string(prop) + ", ...) => " + std::to_string(iRetVal) + "\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetInt32TrackedDeviceProperty("} +std::to_string(prop) + ", ...) => " + std::to_string(iRetVal) + "\n");
     }
 
     return iRetVal;
@@ -288,7 +288,7 @@ std::uint64_t HmdDriver::GetUint64TrackedDeviceProperty(vr::ETrackedDeviceProper
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetUint64TrackedDeviceProperty(...)\n");
+        m_pDriverLog->Debug("HmdDriver::GetUint64TrackedDeviceProperty(...)\n");
     }
 
     return 0;
@@ -298,7 +298,7 @@ vr::HmdMatrix34_t HmdDriver::GetMatrix34TrackedDeviceProperty(vr::ETrackedDevice
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetMatrix34TrackedDeviceProperty("} + std::to_string(prop) + ")\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetMatrix34TrackedDeviceProperty("} +std::to_string(prop) + ")\n");
     }
     *pError = vr::TrackedProp_ValueNotProvidedByDevice;
     vr::HmdMatrix34_t matIdentity{};
@@ -370,7 +370,7 @@ std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty
 
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::GetStringTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => \"" + strRetVal + "\"\n");
+        m_pDriverLog->Debug(std::string{"HmdDriver::GetStringTrackedDeviceProperty("} +std::to_string(prop) + ", ...) => \"" + strRetVal + "\"\n");
     }
 
     return strRetVal;
@@ -390,7 +390,7 @@ void HmdDriver::RunFrame()
     {
         if (m_pDriverLog)
         {
-            //m_pDriverLog->Log("HmdDriver::RunFrame(), but m_uObjectId is invalid!\n");
+            m_pDriverLog->Debug("HmdDriver::RunFrame(), but m_uObjectId is invalid!\n");
         }
     }
 }
@@ -399,7 +399,7 @@ void HmdDriver::GetWindowBounds(std::int32_t *piX, std::int32_t *piY, std::uint3
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetWindowBounds()\n");
+        m_pDriverLog->Debug("HmdDriver::GetWindowBounds()\n");
     }
     *piX = m_iWindowX;
     *piY = m_iWindowY;
@@ -411,7 +411,7 @@ bool HmdDriver::IsDisplayOnDesktop()
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::IsDisplayOnDesktop()\n");
+        m_pDriverLog->Debug("HmdDriver::IsDisplayOnDesktop()\n");
     }
     return true;
 }
@@ -420,7 +420,7 @@ bool HmdDriver::IsDisplayRealDisplay()
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::IsDisplayRealDisplay()\n");
+        m_pDriverLog->Debug("HmdDriver::IsDisplayRealDisplay()\n");
     }
     return false;
 }
@@ -429,7 +429,7 @@ void HmdDriver::GetRecommendedRenderTargetSize(std::uint32_t *puWidth, std::uint
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetRecommendedRenderTargetSize(...)\n");
+        m_pDriverLog->Debug("HmdDriver::GetRecommendedRenderTargetSize(...)\n");
     }
     *puWidth = m_iRenderWidth;
     *puHeight = m_iRenderHeight;
@@ -439,7 +439,7 @@ void HmdDriver::GetEyeOutputViewport(vr::EVREye eEye, std::uint32_t *puX, std::u
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetEyeOutputViewport(...)\n");
+        m_pDriverLog->Debug("HmdDriver::GetEyeOutputViewport(...)\n");
     }
     *puY = 0;
     *puWidth = m_iWindowWidth / 2;
@@ -459,7 +459,7 @@ void HmdDriver::GetProjectionRaw(vr::EVREye eEye, float *pfLeft, float *pfRight,
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::GetProjectionRaw(...)\n");
+        m_pDriverLog->Debug("HmdDriver::GetProjectionRaw(...)\n");
     }
     *pfLeft = -1.0;
     *pfRight = 1.0;
@@ -471,7 +471,7 @@ vr::DistortionCoordinates_t HmdDriver::ComputeDistortion(vr::EVREye eEye, float 
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log(std::string{"HmdDriver::ComputeDistortion("} + std::to_string(eEye) + ", "
+        m_pDriverLog->Debug(std::string{"HmdDriver::ComputeDistortion("} +std::to_string(eEye) + ", "
                           + std::to_string(fU) + ", " + std::to_string(fV) + ")\n");
     }
 
@@ -495,7 +495,7 @@ void HmdDriver::CreateSwapTextureSet(std::uint32_t unPid, std::uint32_t unFormat
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::CreateSwapTextureSet(...)\n");
+        m_pDriverLog->Debug("HmdDriver::CreateSwapTextureSet(...)\n");
     }
 }
 
@@ -503,7 +503,7 @@ void HmdDriver::DestroySwapTextureSet(void *pSharedTextureHandle)
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::DestroySwapTextureSet(...)\n");
+        m_pDriverLog->Debug("HmdDriver::DestroySwapTextureSet(...)\n");
     }
 }
 
@@ -511,7 +511,7 @@ void HmdDriver::DestroyAllSwapTextureSets(std::uint32_t unPid)
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::DestroyAllSwapTextureSets(...)\n");
+        m_pDriverLog->Debug("HmdDriver::DestroyAllSwapTextureSets(...)\n");
     }
 }
 
@@ -519,7 +519,7 @@ void HmdDriver::SubmitLayer(void *pSharedTextureHandles[2], vr::VRTextureBounds_
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::SubmitLayer(...)\n");
+        m_pDriverLog->Debug("HmdDriver::SubmitLayer(...)\n");
     }
 }
 
@@ -527,7 +527,7 @@ void HmdDriver::Present(void *hSyncTexture)
 {
     if (m_pDriverLog)
     {
-        m_pDriverLog->Log("HmdDriver::Present(...)\n");
+        m_pDriverLog->Debug("HmdDriver::Present(...)\n");
     }
 }
 

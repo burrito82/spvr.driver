@@ -22,7 +22,7 @@ Logger::Logger(ControlInterface *pControlInterface):
 {
     std::ostringstream ss{};
     ss << std::this_thread::get_id() << ": ";
-    m_strLinePrefix = ss.str();
+    m_strDebugLinePrefix = ss.str();
 }
 
 Logger::~Logger()
@@ -51,11 +51,11 @@ void Logger::Log(const char *pchLogMessage)
 {
     if (m_pControlInterface)
     {
-        m_pControlInterface->Log(m_strLinePrefix + std::string{pchLogMessage});
+        m_pControlInterface->Log(pchLogMessage);
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        //pDriverLog->Log((m_strLinePrefix + pchLogMessage).c_str());
+        pDriverLog->Log(pchLogMessage);
     }
 }
 
@@ -63,12 +63,22 @@ void Logger::Log(std::string const &strLogMessage)
 {
     if (m_pControlInterface)
     {
-        m_pControlInterface->Log(m_strLinePrefix + strLogMessage);
+        m_pControlInterface->Log(strLogMessage);
     }
     for (auto pDriverLog : m_vecDriverLogs)
     {
-        //pDriverLog->Log((m_strLinePrefix + strLogMessage).c_str());
+        pDriverLog->Log(strLogMessage.c_str());
     }
+}
+
+void Logger::Debug(std::string const &strLogMessage)
+{
+#ifdef _DEBUG
+    if (m_pControlInterface)
+    {
+        m_pControlInterface->Log(m_strDebugLinePrefix + strLogMessage);
+    }
+#endif // _DEBUG
 }
 
 } // namespace spvr

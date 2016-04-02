@@ -22,7 +22,7 @@ Context::Context():
 m_pControlInterface{std::make_unique<ControlInterface>()},
 m_pLogger{std::make_unique<Logger>(m_pControlInterface.get())}
 {
-    m_pLogger->Log(std::string{"Context::Context()@"} + std::to_string(reinterpret_cast<int>(this)) + '\n');
+    m_pLogger->Debug(std::string{"Context::Context()@"} +std::to_string(reinterpret_cast<int>(this)) + '\n');
 }
 
 //Context::~Context() = default;
@@ -30,7 +30,7 @@ Context::~Context()
 {
     if (m_pLogger)
     {
-        m_pLogger->Log(std::string{"Context::~Context()@"} + std::to_string(reinterpret_cast<int>(this)) + '\n');
+        m_pLogger->Debug(std::string{"Context::~Context()@"} +std::to_string(reinterpret_cast<int>(this)) + '\n');
     }
 }
 

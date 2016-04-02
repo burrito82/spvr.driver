@@ -49,7 +49,7 @@ vr::EVRInitError SmartServer::Init(vr::IDriverLog *pDriverLog, vr::IServerDriver
     {
         m_pLogger->AddDriverLog(pDriverLog);
     }
-    m_pLogger->Log(std::string{"SmartServer::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
+    m_pLogger->Debug(std::string{"SmartServer::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
 
     try
     {
@@ -78,7 +78,7 @@ void SmartServer::Cleanup()
 {
     if (m_pLogger)
     {
-        m_pLogger->Log("SmartServer::Cleanup()\n");
+        m_pLogger->Debug("SmartServer::Cleanup()\n");
     }
     m_pHmdDriver.reset(nullptr);
     //Context::Destroy();
@@ -87,7 +87,7 @@ void SmartServer::Cleanup()
 /** returns the number of HMDs that this driver manages that are physically connected. */
 std::uint32_t SmartServer::GetTrackedDeviceCount()
 {
-    m_pLogger->Log("SmartServer::GetTrackedDeviceCount()\n");
+    m_pLogger->Debug("SmartServer::GetTrackedDeviceCount()\n");
     return 1;
 }
 
@@ -98,7 +98,7 @@ vr::ITrackedDeviceServerDriver *SmartServer::GetTrackedDeviceDriver(std::uint32_
     {
         pchInterfaceVersion = "nullptr";
     }
-    m_pLogger->Log(std::string{"SmartServer::GetTrackedDeviceDriver("} +std::to_string(uWhich) + ", \"" + pchInterfaceVersion + "\");\n");
+    m_pLogger->Debug(std::string{"SmartServer::GetTrackedDeviceDriver("} +std::to_string(uWhich) + ", \"" + pchInterfaceVersion + "\");\n");
     if (std::string{pchInterfaceVersion} != vr::ITrackedDeviceServerDriver_Version)
     {
         return nullptr;
@@ -118,7 +118,7 @@ vr::ITrackedDeviceServerDriver *SmartServer::FindTrackedDeviceDriver(char const 
     {
         pchInterfaceVersion = "nullptr";
     }
-    m_pLogger->Log(std::string{"SmartServer::GetTrackedDeviceDriver("} + pchId + ", \"" + pchInterfaceVersion + "\");\n");
+    m_pLogger->Debug(std::string{"SmartServer::GetTrackedDeviceDriver("} +pchId + ", \"" + pchInterfaceVersion + "\");\n");
     if (std::string{pchInterfaceVersion} != vr::ITrackedDeviceServerDriver_Version)
     {
         return nullptr;
@@ -147,7 +147,7 @@ void SmartServer::RunFrame()
 /** Returns true if the driver wants to block Standby mode. */
 bool SmartServer::ShouldBlockStandbyMode()
 {
-    m_pLogger->Log("SmartServer::ShouldBlockStandbyMode()\n");
+    m_pLogger->Debug("SmartServer::ShouldBlockStandbyMode()\n");
     return false;
 }
 
@@ -155,14 +155,14 @@ bool SmartServer::ShouldBlockStandbyMode()
 * state it has. */
 void SmartServer::EnterStandby()
 {
-    m_pLogger->Log("SmartServer::EnterStandby()\n");
+    m_pLogger->Debug("SmartServer::EnterStandby()\n");
 }
 
 /** Called when the system is leaving Standby mode. The driver should switch itself back to
 full operation. */
 void SmartServer::LeaveStandby()
 {
-    m_pLogger->Log("SmartServer::LeaveStandby()\n");
+    m_pLogger->Debug("SmartServer::LeaveStandby()\n");
 }
 
 } // namespace spvr

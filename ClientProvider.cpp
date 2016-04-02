@@ -64,7 +64,7 @@ vr::EVRInitError SmartClient::Init(vr::IDriverLog *pDriverLog, vr::IClientDriver
 
     m_pLogger->Log(copyright_valve);
     m_pLogger->Log(copyright);
-    m_pLogger->Log(std::string{"SmartClient::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
+    m_pLogger->Debug(std::string{"SmartClient::Init(\""} +pchUserDriverConfigDir + "\", \"" + pchDriverInstallDir + "\");\n");
     vr::IVRSettings *pSettings = pDriverHost->GetSettings(vr::IVRSettings_Version);
     return vr::EVRInitError::VRInitError_None;
 }
@@ -92,7 +92,7 @@ bool SmartClient::BIsHmdPresent(char const *pchUserConfigDir)
     }
     if (m_pLogger)
     {
-        m_pLogger->Log(std::string{"SmartClient::BIsHmdPresent(\""} + pchUserConfigDir + "\")\n");
+        m_pLogger->Debug(std::string{"SmartClient::BIsHmdPresent(\""} +pchUserConfigDir + "\")\n");
     }
     return false;
 }
@@ -104,7 +104,7 @@ vr::EVRInitError SmartClient::SetDisplayId(char const *pchDisplayId)
     {
         pchDisplayId = "nullptr";
     }
-    m_pLogger->Log(std::string{"SmartClient::SetDisplayId(\""} + pchDisplayId + "\")\n");
+    m_pLogger->Debug(std::string{"SmartClient::SetDisplayId(\""} +pchDisplayId + "\")\n");
     return vr::VRInitError_None;
 }
 
@@ -116,7 +116,7 @@ vr::EVRInitError SmartClient::SetDisplayId(char const *pchDisplayId)
 */
 vr::HiddenAreaMesh_t SmartClient::GetHiddenAreaMesh(vr::EVREye eEye)
 {
-    m_pLogger->Log(std::string{"SmartClient::GetHiddenAreaMesh("} + std::to_string(eEye) + ")\n");
+    m_pLogger->Debug(std::string{"SmartClient::GetHiddenAreaMesh("} +std::to_string(eEye) + ")\n");
     return vr::HiddenAreaMesh_t{nullptr, 0u};
 }
 
@@ -124,7 +124,7 @@ vr::HiddenAreaMesh_t SmartClient::GetHiddenAreaMesh(vr::EVREye eEye)
 * Returns the size in bytes of the buffer required to hold the specified resource. */
 uint32_t SmartClient::GetMCImage(std::uint32_t *pImgWidth, std::uint32_t *pImgHeight, std::uint32_t *pChannels, void *pDataBuffer, std::uint32_t unBufferLen)
 {
-    m_pLogger->Log("SmartClient::GetMCImage(...)\n");
+    m_pLogger->Debug("SmartClient::GetMCImage(...)\n");
     return 0;
 }
 
