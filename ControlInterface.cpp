@@ -104,14 +104,7 @@ public:
         m_pMappedRegion{},
         m_pMemoryContent{}
     {
-        if (S_eShmMode == ShmConfig::CONTROL)
-        {
-            m_pShmObject = std::make_unique<windows_shared_memory>(create_only, S_aShmName, read_write, 2u * sizeof(SharedMemoryContent));
-        }
-        else
-        {
-            m_pShmObject = std::make_unique<windows_shared_memory>(open_only, S_aShmName, read_write);
-        }
+        m_pShmObject = std::make_unique<windows_shared_memory>(open_or_create, S_aShmName, read_write, 2u * sizeof(SharedMemoryContent));
 
         m_pMappedRegion = std::make_unique<mapped_region>(*m_pShmObject, read_write);
 
