@@ -7,10 +7,14 @@
 #include "Context.h"
 #include "ControlInterface.h"
 #include "Logger.h"
+#include "PoseUpdater.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
+
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
 
 #include <chrono>
 #include <cstring>
@@ -24,6 +28,7 @@ namespace spvr
 HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLog):
     m_pServerDriverHost{pServerDriverHost},
     m_pDriverLog{pDriverLog},
+    m_pPoseUpdater{std::make_unique<PoseUpdater>(*pDriverLog, *this)},
     m_uObjectId{vr::k_unTrackedDeviceIndexInvalid},
     m_sSerialNumber("SPVR0815"),
     m_sModelNumber("SmartPhoneVR Driver 0x0000"),
@@ -56,6 +61,8 @@ HmdDriver::HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLo
     m_iRenderHeight = 1680;
 }
 
+HmdDriver::~HmdDriver() = default;
+
 char const *HmdDriver::GetSerialNumber() const
 {
     return m_sSerialNumber.c_str();
@@ -73,7 +80,7 @@ vr::EVRInitError HmdDriver::Activate(std::uint32_t uObjectId)
         m_pDriverLog->Debug(std::string{"HmdDriver::Activate("} +std::to_string(uObjectId) + ")\n");
     }
     m_uObjectId = uObjectId;
-    /*m_oPoseUpdateThread = std::thread{
+    m_oPoseUpdateThread = std::thread{
         [this]()
         {
             volatile auto uObjectId = m_uObjectId;
@@ -86,7 +93,7 @@ vr::EVRInitError HmdDriver::Activate(std::uint32_t uObjectId)
                 uObjectId = m_uObjectId;
             }
         }
-    };*/
+    };
     return vr::VRInitError_None;
 }
 

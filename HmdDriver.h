@@ -15,12 +15,13 @@ namespace spvr
 {
 
 class Logger;
+class PoseUpdater;
 
 class HmdDriver final : public vr::ITrackedDeviceServerDriver, public vr::IVRDisplayComponent
 {
 public:
     explicit HmdDriver(vr::IServerDriverHost *pServerDriverHost, Logger *pDriverLog = nullptr);
-    ~HmdDriver() = default;
+    ~HmdDriver();
 
     void RunFrame();
 
@@ -29,9 +30,11 @@ public:
 
 private:
     std::string HmdDriver::GetStringTrackedDeviceProperty(vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError &rError);
+    void ReceiveUdp();
 
     vr::IServerDriverHost *m_pServerDriverHost;
     Logger *m_pDriverLog;
+    std::unique_ptr<PoseUpdater> m_pPoseUpdater;
     std::uint32_t m_uObjectId;
 
     std::string m_sSerialNumber;

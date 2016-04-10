@@ -15,6 +15,8 @@ set(DirFiles
     HmdDriver.h
     Logger.cpp
     Logger.h
+    PoseUpdater.cpp
+    PoseUpdater.h
     ServerProvider.cpp
     ServerProvider.h
     smartvr.cpp
