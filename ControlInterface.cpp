@@ -105,17 +105,17 @@ public:
         m_pMappedRegion{},
         m_pMemoryContent{}
     {
-        m_pShmObject = std::make_unique<windows_shared_memory>(open_or_create, S_aShmName, read_write, 2u * sizeof(SharedMemoryContent));
-
-        m_pMappedRegion = std::make_unique<mapped_region>(*m_pShmObject, read_write);
-
-        if (S_eShmMode == ShmConfig::CONTROL)
+        try
         {
-            m_pMemoryContent = new (m_pMappedRegion->get_address()) SharedMemoryContent{};
-        }
-        else
-        {
+            m_pShmObject = std::make_unique<windows_shared_memory>(open_only, S_aShmName, read_write);
+            m_pMappedRegion = std::make_unique<mapped_region>(*m_pShmObject, read_write);
             m_pMemoryContent = static_cast<SharedMemoryContent *>(m_pMappedRegion->get_address());
+        }
+        catch (...)
+        {
+            m_pShmObject = std::make_unique<windows_shared_memory>(create_only, S_aShmName, read_write, 2u * sizeof(SharedMemoryContent));
+            m_pMappedRegion = std::make_unique<mapped_region>(*m_pShmObject, read_write);
+            m_pMemoryContent = new (m_pMappedRegion->get_address()) SharedMemoryContent{};
         }
     }
 
@@ -125,7 +125,7 @@ public:
         {
             if (S_eShmMode == ShmConfig::CONTROL)
             {
-                m_pMemoryContent->~SharedMemoryContent();
+                //m_pMemoryContent->~SharedMemoryContent();
             }
             m_pMemoryContent = nullptr;
         }
