@@ -152,6 +152,7 @@ vr::DriverPose_t HmdDriver::GetPose()
 
     pose.qWorldFromDriverRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
     pose.qDriverFromHeadRotation = vr::HmdQuaternion_t{1.0, 0.0, 0.0, 0.0};
+    pose.vecPosition[1] = Context::GetInstance().GetControlInterface().GetHeight();
 
     glm::quat const qRotation = Context::GetInstance().GetControlInterface().GetRotation();
 

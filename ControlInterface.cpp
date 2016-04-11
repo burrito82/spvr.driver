@@ -94,6 +94,7 @@ struct SharedMemoryContent final
     float m_fDistortionK0 = 0.441f;
     float m_fDistortionK1 = 0.156f;
     float m_fDistortionScale = 1.0f;
+    float m_fHeight = 1.5f;
 };
 
 class SharedMemory final
@@ -169,6 +170,9 @@ public:
 
     void SetDistortionScale(float scale);
     float GetDistortionScale() const;
+
+    void SetHeight(float fHeight);
+    float GetHeight() const;
 
 private:
     std::mutex m_oMutex;
@@ -265,6 +269,26 @@ float ControlInterface::GetDistortionScale() const
 float ControlInterface::ControlInterfaceImpl::GetDistortionScale() const
 {
     return m_oSharedMemory->m_fDistortionScale;
+}
+
+void ControlInterface::SetHeight(float fHeight)
+{
+    return m_pImpl->SetHeight(fHeight);
+}
+
+void ControlInterface::ControlInterfaceImpl::SetHeight(float fHeight)
+{
+    m_oSharedMemory->m_fHeight = fHeight;
+}
+
+float ControlInterface::GetHeight() const
+{
+    return m_pImpl->GetHeight();
+}
+
+float ControlInterface::ControlInterfaceImpl::GetHeight() const
+{
+    return m_oSharedMemory->m_fHeight;
 }
 
 } // namespace spvr

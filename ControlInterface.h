@@ -34,6 +34,9 @@ public:
     void SetDistortionScale(float scale);
     float GetDistortionScale() const;
 
+    void SetHeight(float fHeight);
+    float GetHeight() const;
+
     class ControlInterfaceException final : std::runtime_error
     {
     public:
